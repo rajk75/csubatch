@@ -43,6 +43,27 @@ int main()
         else if(strstr(cmd_input, "help")) //if string contains substring "help"
         {
             printf("DEBUG: help command was detected\n");
+            //todo: call help module here.
+        }
+        else if(strstr(cmd_input, "run"))
+        {
+            //todo: call to scheduling module
+        }
+        else if(strstr(cmd_input, "list"))
+        {
+            //todo: 
+        }
+        else if(strcmp(cmd_input, "sjf") == 0)
+        {
+            //switch scheduling policy
+        }
+        else if(strcmp(cmd_input, "fcfs") == 0)
+        {
+            //switch scheduling policy
+        }
+        else if(strcmp(cmd_input, "priority") == 0)
+        {
+            //switch scheduling policy
         }
         else
         {
