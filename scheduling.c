@@ -73,7 +73,7 @@ int move_pointer(struct node* new_node)
         }
         return 0;
     }
-    //todo, add logic for other scheudling algorithms
+    //todo, add logic for other scheduling algorithms
     else
     {
         return 1;

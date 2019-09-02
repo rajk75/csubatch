@@ -56,14 +56,13 @@ int main()
         }
         else if(strstr(cmd_input, "run"))
         {
-            //need to split input into name, time, and prioity
-            //todo: call to scheduling module
+            //todo: need to split input into name, time, and prioity
             printf("DEBUG: command parsing not implemented, submitting a default job\n");
             submit_job("default-job", 10, 1);
         }
         else if(strstr(cmd_input, "list"))
         {
-            //todo: 
+            //todo: implement a queue traversal, and format a table
         }
         else if(strcmp(cmd_input, "sjf") == 0)
         {
