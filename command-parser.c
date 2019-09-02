@@ -1,3 +1,9 @@
+/*
+Authors: James Ellerbee, Raj Kotak
+Date: September 2019
+Purpose: project1 for cpsc 4175.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
