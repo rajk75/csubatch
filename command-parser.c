@@ -4,10 +4,13 @@ Date: September 2019
 Purpose: project1 for cpsc 4175.
 */
 
+//from c lib
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
+//from project
+#include "scheduling.c"
 
 const char* PROGRAM_AUTHOR = "James & Raj";
 const int COMMAND_INPUT_BUFFER = 10; //amount of characters is allowed at command input
@@ -53,7 +56,10 @@ int main()
         }
         else if(strstr(cmd_input, "run"))
         {
+            //need to split input into name, time, and prioity
             //todo: call to scheduling module
+            printf("DEBUG: command parsing not implemented, submitting a default job\n");
+            submit_job("default-job", 10, 1);
         }
         else if(strstr(cmd_input, "list"))
         {
@@ -62,14 +68,17 @@ int main()
         else if(strcmp(cmd_input, "sjf") == 0)
         {
             //switch scheduling policy
+            change_scheduling_policy(0);
         }
         else if(strcmp(cmd_input, "fcfs") == 0)
         {
             //switch scheduling policy
+            change_scheduling_policy(1);
         }
         else if(strcmp(cmd_input, "priority") == 0)
         {
             //switch scheduling policy
+            change_scheduling_policy(2);
         }
         else
         {
@@ -77,4 +86,6 @@ int main()
             printf("invalid command.\n"); 
         }
     }
+    free(cmd_input);
+    //todo: write a free queue function that frees all the nodes. (implement in scheudling.c)
 }
