@@ -57,12 +57,13 @@ int main()
         else if(strstr(cmd_input, "run"))
         {
             //todo: need to split input into name, time, and prioity
-            printf("DEBUG: command parsing not implemented, submitting a default job\n");
+            printf("WARNING: command spliting not implemented yet, submitting a default job.\n");
             submit_job("default-job", 10, 1);
         }
         else if(strstr(cmd_input, "list"))
         {
             //todo: implement a queue traversal, and format a table
+            list_jobs();
         }
         else if(strcmp(cmd_input, "sjf") == 0)
         {
@@ -85,6 +86,8 @@ int main()
             printf("invalid command.\n"); 
         }
     }
+    //functions to be called before exiting program.
     free(cmd_input);
+    deconstruct_queue();
     //todo: write a free queue function that frees all the nodes. (implement in scheudling.c)
 }
