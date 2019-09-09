@@ -35,23 +35,13 @@ int deconstruct_queue()
     }
     //set current pointer to head
     __cur = __head;
-    int jobno = 0;
     //traverse and free pointers
     while(__cur != NULL)
     {
-        //printf("DEBUG: begin free for job: %s with position number %d\n", __cur->data->name, jobno);
-        //free(__cur->data->name);
-        //printf("DEBUG: freed job name\n");
         free(__cur->data);
-        //printf("DEBUG: freed job struct\n");
         struct node* old = __cur;
         __cur = __cur->next;
-        jobno++;
-        if(old != NULL)
-        {
         free(old);
-        }
-        //printf("DEBUG: freed cur node\n");
     }
     return 1;
 }
