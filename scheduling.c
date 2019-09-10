@@ -31,7 +31,7 @@ int deconstruct_queue()
 {
     if(__head == NULL)
     {
-        return 0;
+        return 1;
     }
     //set current pointer to head
     __cur = __head;
@@ -43,7 +43,7 @@ int deconstruct_queue()
         __cur = __cur->next;
         free(old);
     }
-    return 1;
+    return 0;
 }
 
 /*
