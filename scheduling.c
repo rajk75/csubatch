@@ -228,6 +228,48 @@ void list_jobs()
 }
 
 /*
+* reorder nodes function contains logic to traverse queue and reorder nodes depending on new scheduling policy
+*/
+void reorder_nodes()
+{
+    struct node* node_arr[num_jobs];
+    __cur = __head;
+    //populate node array
+    for(int i = 0; i < num_jobs; i++)
+    {
+        node_arr[i] = __cur;
+        __cur++;
+    }
+    //sort the array based on scheduling policy
+    switch(__scheduling_policy)
+    {
+        case 0:
+            // first come first serve based on arrival time, smallest arrival time first
+            printf("DEBUG: note impltemented yet");
+        break; 
+        case 1:
+            //shortest job first, smallest execution time first
+            for(int i = 0; i < num_jobs; i++)
+            {
+                for(int j = i+1; j < num_jobs; j++)
+                {
+                    if(node_arr[j]->data->execution_time < node_arr[i]->data->execution_time)
+                    {
+                        struct node* temp = node_arr[i];
+                        node_arr[i] = node_arr[j];
+                        node_arr[j] = temp;
+                    }
+                }
+            }
+        break;
+        case 2:
+            //priority 
+            printf("DEBUG: note impltemented yet");
+        break;
+    }
+}
+
+/*
 * the change_scheduling_policy updates the schduling policy to the paramater pasted and restructures the queue
 * 
 * @param new_policy; the new policy to update the current scheudling policy to
@@ -246,6 +288,7 @@ int change_scheduling_policy(int new_policy)
     }
     __scheduling_policy = new_policy;
     //call restructure function to reorder jobs.
+    reorder_nodes();
     printf("Scheduling policy has been switched to %s. All the %d waiting jobs have been rescheduled.\n", get_current_scheduling_policy(), -1);
     return 0;
 }
