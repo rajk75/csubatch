@@ -63,11 +63,36 @@ int validate_command_input(int max_num_flags, char* cmd_input)
 char** parse_flags(int max_num_flags, char* input)
 {  
     //char flag_arr [max_num_flags][FLAG_INPUT_BUFFER];
+
+    //char** for pointing to multiple flag char*
     char** flags = malloc(sizeof(char)* max_num_flags);
     
+    //initialize a pointer at each index of the char **
     for(int char_index = 0; char_index < max_num_flags; char_index++)
     {
         flags[char_index] = malloc(sizeof(char)*FLAG_INPUT_BUFFER);
+    }
+
+    char flag[FLAG_INPUT_BUFFER];
+    char* cur_char = input;
+
+    //loop through char** and use strcpy copy from '-' to ' '
+    for(int char_index = 0; char_index < max_num_flags; char_index++)
+    {
+        //move cur char to '-'
+        while(*cur_char != '-')
+        {
+            cur_char++;
+        }
+        //add char to array
+        int i = 0;
+        while(*cur_char != ' ')
+        {
+            cur_char++;
+            flag[i] = *cur_char;
+        }
+        printf("DEBUG: the flag: %s", &flag);
+        strcpy(flags[char_index], flag);
     }
 
     return flags;
