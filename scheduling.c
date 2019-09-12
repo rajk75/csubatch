@@ -98,6 +98,14 @@ int move_pointer(struct node* new_node)
         return 0;
     }
     //todo, add logic for other scheduling algorithms
+    else if (__scheduling_policy == 1)
+    {
+        //shortest job first
+    }
+    else if (__scheduling_policy == 2)
+    {
+        //priority
+    }
     else
     {
         return 1;
