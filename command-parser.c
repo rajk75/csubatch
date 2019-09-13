@@ -78,6 +78,7 @@ char** parse_flags(int num_flags, char* input)
     //loop through char** and use strcpy copy from '-' to ' '
     for(int char_index = 0; char_index < num_flags; char_index++)
     {
+        //char flag[FLAG_INPUT_BUFFER];
         //move cur char to '-'
         while(*cur_char != '-' && *cur_char != '\0')
         {
@@ -88,21 +89,24 @@ char** parse_flags(int num_flags, char* input)
         while(*cur_char != ' ' && *cur_char != '\0')
         {
             cur_char++;
-            printf("%c ", *cur_char);
             if(*cur_char != ' ')
             {
+                printf("%c ", *cur_char);
                 flag[i] = *cur_char;    
             }
             i++;
         }
+        printf("%c", '\n');
         //after copying characters, assign terminating char, if cur char is not one
+        /*
         if(*cur_char != '\0')
         {
             flag[i] = '\0';
         }
-        printf("\nDEBUG: the flag: %s\n", flag);
+        */
+        //printf("\nDEBUG: the flag: %s\n", flag);
         strcpy(flags[char_index], flag);
-        printf("DEBUG: flag copied into flags.\n");
+        //printf("DEBUG: flag copied into flags.\n");
     }
 
     return flags;
@@ -151,10 +155,11 @@ int main()
                 int job_execution_time = 10;
                 int job_priority = 1;
 
+                //TODO; add validation for flags
                 if(flags != NULL)
                 {
                     printf("DEBUG: job name from flag '%s'\n", flags[0]);
-                    //TODO; add validation for flags
+                    
                     strcpy(job_name, flags[0]);
                     printf("DEBUG: job time from flag '%s'\n", flags[1]);
                     job_execution_time = atoi(flags[1]);

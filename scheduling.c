@@ -168,6 +168,11 @@ int find_total_waiting_time()
 */
 int submit_job(char* job_name, int job_execution_time, int job_priority)
 {
+    int time_to_wait = 0;
+    if(num_jobs > 1)
+    {
+        time_to_wait = find_total_waiting_time();
+    }
     if(__head == 0)
     {
         __head = (struct node*)(malloc(sizeof(struct node)));
@@ -176,7 +181,7 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
     }
     //create a new job
     struct job* new_job = (struct job*)(malloc(sizeof(struct job)));
-    //todo, add arrival time and progress to job struct.
+    //TODO: add arrival time and progress to job struct.
     new_job->name = job_name;
     new_job->execution_time = job_execution_time;
     new_job->priority = job_priority;
@@ -195,11 +200,7 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
         move_pointer(new_node);
         insert_node(new_node);
     }
-    int time_to_wait = 0;
-    if(num_jobs > 1)
-    {
-        time_to_wait = find_total_waiting_time();
-    }
+    
     printf("Job %s was sumbitted.\nTotal number of jobs in the queue: %d\nExpected waiting time: %d seconds\nScheduling Policy: %s\n", job_name, num_jobs, time_to_wait, get_current_scheduling_policy());
     return 0;
 }
