@@ -232,7 +232,7 @@ void list_jobs()
 */
 void reorder_nodes()
 {
-    struct node* node_arr[num_jobs];
+    struct node** node_arr = malloc(sizeof(struct node)*num_jobs);
     __cur = __head;
     //populate node array
     for(int i = 0; i < num_jobs; i++)
@@ -246,6 +246,18 @@ void reorder_nodes()
         case 0:
             // first come first serve based on arrival time, smallest arrival time first
             printf("DEBUG: note impltemented yet");
+            for(int i = 0; i < num_jobs; i++)
+            {
+                for(int j = i+1; j < num_jobs; j++)
+                {
+                    if(node_arr[j]->data->arrival_time < node_arr[i]->data->arrival_time) // TODO: write a function for this
+                    {
+                        struct node* temp = node_arr[i];
+                        node_arr[i] = node_arr[j];
+                        node_arr[j] = temp;
+                    }
+                }
+            }
         break; 
         case 1:
             //shortest job first, smallest execution time first
@@ -265,6 +277,18 @@ void reorder_nodes()
         case 2:
             //priority 
             printf("DEBUG: note impltemented yet");
+            for(int i = 0; i < num_jobs; i++)
+            {
+                for(int j = i+1; j < num_jobs; j++)
+                {
+                    if(node_arr[j]->data->priority < node_arr[i]->data->priority)
+                    {
+                        struct node* temp = node_arr[i];
+                        node_arr[i] = node_arr[j];
+                        node_arr[j] = temp;
+                    }
+                }
+            }
         break;
     }
 }

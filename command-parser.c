@@ -37,7 +37,7 @@ void get_input(char* dest)
 * @param cmd_input the command recieved from user
 * @return 1 if the number of flags in the command input exceed max num flags
 */
-int validate_command_input(int max_num_flags, char* cmd_input)
+int count_num_flags(char* cmd_input)
 {
     //test if the number of flags in the input exceed max num of flags
     int num_flags = 0;
@@ -51,48 +51,58 @@ int validate_command_input(int max_num_flags, char* cmd_input)
         cur_char++;
     }
     printf("DEBUG: number of flags detected %d\n", num_flags);
-    return num_flags > max_num_flags;
+    return num_flags;
 }
 
 /*
 * parse_flags function returns a char double pointer for all of the flags parsed from the input command, 
 * assumes that the input has been validated
-* @param max_num_flags the maximum number of flags in the command
+* @param max_num_flags the number of flags in the command
 * @param input the command 
 */
-char** parse_flags(int max_num_flags, char* input)
+char** parse_flags(int num_flags, char* input)
 {  
     //char flag_arr [max_num_flags][FLAG_INPUT_BUFFER];
 
     //char** for pointing to multiple flag char*
-    char** flags = malloc(sizeof(char)* max_num_flags);
+    char** flags = malloc(sizeof(char)* num_flags);
     
     //initialize a pointer at each index of the char **
-    for(int char_index = 0; char_index < max_num_flags; char_index++)
+    for(int char_index = 0; char_index < num_flags; char_index++)
     {
         flags[char_index] = malloc(sizeof(char)*FLAG_INPUT_BUFFER);
     }
 
     char flag[FLAG_INPUT_BUFFER];
     char* cur_char = input;
-
     //loop through char** and use strcpy copy from '-' to ' '
-    for(int char_index = 0; char_index < max_num_flags; char_index++)
+    for(int char_index = 0; char_index < num_flags; char_index++)
     {
         //move cur char to '-'
-        while(*cur_char != '-')
+        while(*cur_char != '-' && *cur_char != '\0')
         {
             cur_char++;
         }
-        //add char to array
+        //add cahracter to the array until hitting space or string terminator
         int i = 0;
-        while(*cur_char != ' ')
+        while(*cur_char != ' ' && *cur_char != '\0')
         {
             cur_char++;
-            flag[i] = *cur_char;
+            printf("%c ", *cur_char);
+            if(*cur_char != ' ')
+            {
+                flag[i] = *cur_char;    
+            }
+            i++;
         }
-        printf("DEBUG: the flag: %s", &flag);
+        //after copying characters, assign terminating char, if cur char is not one
+        if(*cur_char != '\0')
+        {
+            flag[i] = '\0';
+        }
+        printf("\nDEBUG: the flag: %s\n", flag);
         strcpy(flags[char_index], flag);
+        printf("DEBUG: flag copied into flags.\n");
     }
 
     return flags;
@@ -114,7 +124,7 @@ int main()
         if(strstr(cmd_input, "quit"))
         {
             //todo: implement printing statistics,need benchmark module.
-            printf("message to display when exiting csubatch\n");
+            printf("DEBUG: message to display when exiting csubatch\n");
             cont = 0;
         }
         else if(strstr(cmd_input, "help")) //strstr = if string contains substring "help"
@@ -124,15 +134,38 @@ int main()
         }
         else if(strstr(cmd_input, "run"))
         {
-            if(validate_command_input(3, cmd_input))
+            int num_flags = count_num_flags(cmd_input);
+            if(num_flags > 3)
             {
                 printf("ERROR: too many arguments found in input.\n");
             }
             else
             {
-                //todo: need to split input into name, time, and prioity
-                printf("WARNING: command spliting not implemented yet, submitting a default job.\n");
-                submit_job("default-job", 10, 1);
+                char** flags = NULL;
+                if(num_flags > 0)
+                {
+                    flags = parse_flags(num_flags, cmd_input);
+                }
+
+                char job_name[FLAG_INPUT_BUFFER] = "sample_job";
+                int job_execution_time = 10;
+                int job_priority = 1;
+
+                if(flags != NULL)
+                {
+                    printf("DEBUG: job name from flag '%s'\n", flags[0]);
+                    //TODO; add validation for flags
+                    strcpy(job_name, flags[0]);
+                    printf("DEBUG: job time from flag '%s'\n", flags[1]);
+                    job_execution_time = atoi(flags[1]);
+                    printf("DEBUG: execution time as int %d\n", job_execution_time);
+                    printf("DEBUG: job priority from flag '%s'\n", flags[2]);
+                    job_priority = atoi(flags[2]);
+                    printf("DEBUG: priority as int %d\n", job_priority);
+                }
+                //printf("WARNING: flag interrupting not implemented yet, submitting a default job.\n");
+                submit_job(job_name, job_execution_time, job_priority);
+                free(flags);
             } 
         }
         else if(strstr(cmd_input, "list"))
@@ -158,7 +191,7 @@ int main()
         else
         {
             //invaild command message
-            printf("invalid command.\n"); 
+            printf("ERROR: invalid command.\n"); 
         }
     }
     //functions to be called before exiting program.
