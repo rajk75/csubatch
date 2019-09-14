@@ -216,7 +216,7 @@ void list_jobs()
     {
         return;
     }
-    printf("Name\t\tCPU_time\tPri\tArrival_time\tProgress\n");
+    printf("Name\tCPU_time\tPri\tArrival_time\tProgress\n");
     //todo: traverse queue and print name cpu time, prioity, arrival time, and progress.
     __cur = __head;
     while(__cur != NULL)
@@ -233,20 +233,20 @@ void list_jobs()
 */
 void reorder_nodes()
 {
+    //TODO: fix seg fault
     struct node** node_arr = malloc(sizeof(struct node)*num_jobs);
     __cur = __head;
     //populate node array
     for(int i = 0; i < num_jobs; i++)
     {
         node_arr[i] = __cur;
-        __cur++;
+        __cur = __cur->next;
     }
     //sort the array based on scheduling policy
     switch(__scheduling_policy)
     {
         case 0:
             // first come first serve based on arrival time, smallest arrival time first
-            printf("DEBUG: note impltemented yet");
             for(int i = 0; i < num_jobs; i++)
             {
                 for(int j = i+1; j < num_jobs; j++)
@@ -277,7 +277,6 @@ void reorder_nodes()
         break;
         case 2:
             //priority 
-            printf("DEBUG: note impltemented yet");
             for(int i = 0; i < num_jobs; i++)
             {
                 for(int j = i+1; j < num_jobs; j++)
@@ -292,6 +291,15 @@ void reorder_nodes()
             }
         break;
     }
+    //TODO; restructure. based on new order
+    __head = node_arr[0];
+    __cur = __head;
+    for(int i = 1; i < num_jobs; i++)
+    {
+        __cur->next = node_arr[i];
+        __cur = __cur->next;
+    }
+    __cur->next = NULL;
 }
 
 /*
@@ -314,6 +322,6 @@ int change_scheduling_policy(int new_policy)
     __scheduling_policy = new_policy;
     //call restructure function to reorder jobs.
     reorder_nodes();
-    printf("Scheduling policy has been switched to %s. All the %d waiting jobs have been rescheduled.\n", get_current_scheduling_policy(), -1);
+    printf("Scheduling policy has been switched to %s. All the %d waiting jobs have been rescheduled.\n", get_current_scheduling_policy(), num_jobs);
     return 0;
 }

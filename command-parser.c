@@ -10,11 +10,9 @@ Purpose: project1 for cpsc 4175.
 #include <string.h>
 #include <stddef.h>
 //from project
+#include "command-parser.h"
 #include "scheduling.c"
 
-#define PROGRAM_AUTHOR "James & Raj"
-#define COMMAND_INPUT_BUFFER 30 //amount of characters is allowed at command input
-#define FLAG_INPUT_BUFFER 10
 /*
 * get_input takes a char pointer and writes input from scanf to it
 * @pram dest; the destination to store input from stdin
@@ -50,7 +48,7 @@ int count_num_flags(char* cmd_input)
         }
         cur_char++;
     }
-    printf("DEBUG: number of flags detected %d\n", num_flags);
+    //printf("DEBUG: number of flags detected %d\n", num_flags);
     return num_flags;
 }
 
@@ -91,12 +89,12 @@ char** parse_flags(int num_flags, char* input)
             cur_char++;
             if(*cur_char != ' ')
             {
-                printf("%c ", *cur_char);
+                //printf("%c ", *cur_char);
                 flag[i] = *cur_char;    
             }
             i++;
         }
-        printf("%c", '\n');
+        //printf("%c", '\n');
         //after copying characters, assign terminating char, if cur char is not one
         if(*cur_char != '\0')
         {
@@ -157,15 +155,14 @@ int main()
                 //TODO; add validation for flags
                 if(flags != NULL)
                 {
-                    printf("DEBUG: job name from flag '%s'\n", flags[0]);
-                    
+                    //printf("DEBUG: job name from flag '%s'\n", flags[0]); 
                     strcpy(job_name, flags[0]);
-                    printf("DEBUG: job time from flag '%s'\n", flags[1]);
+                    //printf("DEBUG: job time from flag '%s'\n", flags[1]);
                     job_execution_time = atoi(flags[1]);
-                    printf("DEBUG: execution time as int %d\n", job_execution_time);
-                    printf("DEBUG: job priority from flag '%s'\n", flags[2]);
+                    //printf("DEBUG: execution time as int %d\n", job_execution_time);
+                    //printf("DEBUG: job priority from flag '%s'\n", flags[2]);
                     job_priority = atoi(flags[2]);
-                    printf("DEBUG: priority as int %d\n", job_priority);
+                    //printf("DEBUG: priority as int %d\n", job_priority);
                 }
                 //printf("WARNING: flag interrupting not implemented yet, submitting a default job.\n");
                 submit_job(job_name, job_execution_time, job_priority);
@@ -177,12 +174,12 @@ int main()
             //todo: implement a queue traversal, and format a table
             list_jobs();
         }
-        else if(strstr(cmd_input, "sjf") )
+        else if(strstr(cmd_input, "fcfs"))
         {
             //switch scheduling policy
             change_scheduling_policy(0);
         }
-        else if(strstr(cmd_input, "fcfs"))
+        else if(strstr(cmd_input, "sjf") )
         {
             //switch scheduling policy
             change_scheduling_policy(1);
