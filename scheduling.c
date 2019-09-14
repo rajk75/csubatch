@@ -233,6 +233,8 @@ void list_jobs()
 */
 void reorder_nodes()
 {
+    if (num_jobs > 1)
+    {
     //TODO: fix seg fault
     struct node** node_arr = malloc(sizeof(struct node)*num_jobs);
     __cur = __head;
@@ -300,6 +302,7 @@ void reorder_nodes()
         __cur = __cur->next;
     }
     __cur->next = NULL;
+    }
 }
 
 /*
