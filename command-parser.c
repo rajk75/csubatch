@@ -73,7 +73,7 @@ char** parse_flags(int num_flags, char* input)
         flags[char_index] = malloc(sizeof(char)*FLAG_INPUT_BUFFER);
     }
 
-    char flag[FLAG_INPUT_BUFFER];
+    char* flag = malloc(sizeof(char) *FLAG_INPUT_BUFFER);
     char* cur_char = input;
     //loop through char** and use strcpy copy from '-' to ' '
     for(int char_index = 0; char_index < num_flags; char_index++)
@@ -98,12 +98,10 @@ char** parse_flags(int num_flags, char* input)
         }
         printf("%c", '\n');
         //after copying characters, assign terminating char, if cur char is not one
-        /*
         if(*cur_char != '\0')
         {
             flag[i] = '\0';
         }
-        */
         //printf("\nDEBUG: the flag: %s\n", flag);
         strcpy(flags[char_index], flag);
         //printf("DEBUG: flag copied into flags.\n");
@@ -151,7 +149,8 @@ int main()
                     flags = parse_flags(num_flags, cmd_input);
                 }
 
-                char job_name[FLAG_INPUT_BUFFER] = "sample_job";
+                char* job_name = malloc(sizeof(char) * FLAG_INPUT_BUFFER);
+                strcpy(job_name, "sample_job");
                 int job_execution_time = 10;
                 int job_priority = 1;
 

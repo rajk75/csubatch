@@ -147,11 +147,11 @@ int insert_node(struct node* new_node)
 /* 
 * find total waiting time function traverses the queue and tallies exeuction time of all submitted jobs
 */
-int find_total_waiting_time()
+int find_total_waiting_time(struct node* new_node)
 {
     int total_time = 0;
     __cur = __head;
-    while(__cur != NULL)
+    while(__cur != NULL && __cur != new_node)
     {
         total_time += __cur->data->execution_time;
         __cur = __cur->next;
@@ -168,11 +168,6 @@ int find_total_waiting_time()
 */
 int submit_job(char* job_name, int job_execution_time, int job_priority)
 {
-    int time_to_wait = 0;
-    if(num_jobs > 1)
-    {
-        time_to_wait = find_total_waiting_time();
-    }
     if(__head == 0)
     {
         __head = (struct node*)(malloc(sizeof(struct node)));
@@ -187,6 +182,7 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
     new_job->priority = job_priority;
     time(&(new_job->arrival_time));
     //if head data is null asign new job to head->data
+    struct node* new_node = NULL;
     if(__head->data == NULL)
     {
         __head->data = new_job;
@@ -194,13 +190,17 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
     }
     else //else create a new node
     {   
-        struct node* new_node = (struct node*)(malloc(sizeof(struct node)));
+        new_node = (struct node*)(malloc(sizeof(struct node)));
         new_node->data = new_job;
         new_node->next = NULL;
         move_pointer(new_node);
         insert_node(new_node);
     }
-    
+    int time_to_wait = 0;
+    if(num_jobs > 1 && new_node != NULL)
+    {
+        time_to_wait = find_total_waiting_time(new_node);
+    }
     printf("Job %s was sumbitted.\nTotal number of jobs in the queue: %d\nExpected waiting time: %d seconds\nScheduling Policy: %s\n", job_name, num_jobs, time_to_wait, get_current_scheduling_policy());
     return 0;
 }
