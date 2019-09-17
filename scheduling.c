@@ -99,16 +99,24 @@ int move_pointer(struct node* new_node)
     //todo, add logic for other scheduling algorithms
     else if (__scheduling_policy == 1)
     {
-        //shortest job first, 
-        while(__cur->next != NULL || new_node->data->execution_time > __cur->data->execution_time)
+        //shortest job first,
+        while(__cur->next != NULL)
         {
+            if(new_node->next->data == NULL)
+            {
+                break;
+            }
+            if(new_node->next->data->execution_time > __cur->next->data->execution_time)
+            {
+                break;
+            }
             __cur = __cur->next;
         }
     }
     else if (__scheduling_policy == 2)
     {
         //priority
-        while(__cur->next != NULL || new_node->data->priority < __cur->data->priority)
+        while(__cur->next != NULL || new_node->next->data->priority < __cur->data->priority)
         {
             __cur = __cur->next;
         }

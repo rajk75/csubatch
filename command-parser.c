@@ -74,19 +74,27 @@ int main()
             int job_execution_time = 10;
             int job_priority = 1;
 
-            if(strcmp(input_tokens[1], ""))
+            if(input_tokens[1] != NULL)
             {
-                strcpy(job_name, input_tokens[1]);
+                if(strcmp(input_tokens[1], ""))
+                {
+                    strcpy(job_name, input_tokens[1]);
+                }
             }
-            if(atoi(input_tokens[2]) != 0)
+            if(input_tokens[2] != NULL)
             {
-                job_execution_time = atoi(input_tokens[2]);
+                if(atoi(input_tokens[2]) != 0)
+                {   
+                    job_execution_time = atoi(input_tokens[2]);
+                }
             }
-            if(atoi(input_tokens[3]) != 0)
+            if(input_tokens[3] != NULL)
             {
-                job_priority = atoi(input_tokens[3]);
+                if(atoi(input_tokens[3]) != 0)
+                {
+                    job_priority = atoi(input_tokens[3]);
+                }
             }
-
             submit_job(job_name, job_execution_time, job_priority);
         }
         else if(strstr(input_tokens[0], "list"))
