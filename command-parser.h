@@ -6,7 +6,7 @@
 #define COMMAND_INPUT_BUFFER 30 //amount of characters is allowed at command input
 #define FLAG_INPUT_BUFFER 10
 //begin function declarations
-void get_input(char* dest);
+void get_input();
 int count_num_flags(char* cmd_input);
 char** parse_flags(int num_flags, char* input);
 #endif

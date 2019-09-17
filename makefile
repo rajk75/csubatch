@@ -7,7 +7,7 @@ compile-d :
 run :
 	./main
 
-run-test:
+run-t:
 	./main < test
 
 clean :
