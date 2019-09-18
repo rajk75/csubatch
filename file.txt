@@ -1,0 +1,8 @@
+^run) <job> <time> <pri>: submit a job named <job>,                        execution time is <time>,                        priority is <pri>.!
+^list): display the job status.!
+^fcfs): change the scheduling policy to FCFS.!
+^priority): change the scheduling policy to priority.!
+^sjf): change the scheduling policy to SJF.!
+^quit): exit CSUbatch!
+^test) <benchmark> <policy> <num_of_jobs> <priority_levels>
+     <min_CPU_time> <max_CPU_time>!
