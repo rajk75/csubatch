@@ -95,5 +95,4 @@ int main()
     //functions to be called before exiting program.
     printf("DEBUG: message to display when exiting csubatch\n");
     deconstruct_queue();
-    //TODO: write a free queue function that frees all the nodes. (implement in scheudling.c)
 }

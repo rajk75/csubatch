@@ -293,15 +293,12 @@ void reorder_nodes()
         node_arr[i] = _cur;
         _cur = _cur->next;
     }
-
     //selection_sort(node_arr);
     //sort the array based on scheduling policy
-
     switch(_scheduling_policy)
     {
         case FCFS:
             // first come first serve based on arrival time, smallest arrival time first
-            //TODO: write a function for this
             for(int i = 0; i < num_jobs; i++)
             {
                 for(int j = i+1; j < num_jobs; j++)
@@ -357,7 +354,6 @@ void reorder_nodes()
     _cur->next = NULL;
     free(node_arr);
     }
-    
 }
 
 /*
