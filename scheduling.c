@@ -96,27 +96,18 @@ int move_pointer(struct node* new_node)
             __cur = __cur->next;
         }
     }
-    //todo, add logic for other scheduling algorithms
     else if (__scheduling_policy == 1)
     {
-        //shortest job first,
-        while(__cur->next != NULL)
+        //shortest job first
+        while(__cur->next != NULL && __cur->next->data->execution_time < new_node->data->execution_time)
         {
-            if(new_node->next->data == NULL)
-            {
-                break;
-            }
-            if(new_node->next->data->execution_time > __cur->next->data->execution_time)
-            {
-                break;
-            }
             __cur = __cur->next;
         }
     }
     else if (__scheduling_policy == 2)
     {
         //priority
-        while(__cur->next != NULL || new_node->next->data->priority < __cur->data->priority)
+        while(__cur->next != NULL && new_node->data->priority < __cur->next->data->priority)
         {
             __cur = __cur->next;
         }
@@ -139,7 +130,12 @@ int insert_node(struct node* new_node)
     {
         return 1;
     }
-    if(__cur->next == NULL) //if next is 0, then at the end of queue, therefore just set next to new node.
+    else if(__cur == __head)
+    {
+        __head = new_node;
+        __head->next = __cur;
+    }
+    else if(__cur->next == NULL) //if next is 0, then at the end of queue, therefore just set next to new node.
     {
         __cur->next = new_node;
     }
