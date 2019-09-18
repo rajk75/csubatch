@@ -1,5 +1,5 @@
 /*
-Authors: James Ellerbee, Raj Kotak
+Authors: James Ellerbee
 Date: September 2019
 Purpose: project1 for cpsc 4175.
 */
@@ -10,81 +10,102 @@ Purpose: project1 for cpsc 4175.
 #include <string.h>
 #include <stddef.h>
 //from project
-#include "scheduling.c"
+#include "command-parser.h"
+#include "global.h"
 
-const char* PROGRAM_AUTHOR = "James & Raj";
-const int COMMAND_INPUT_BUFFER = 10; //amount of characters is allowed at command input
+char* _input_tokens[] = {"command", "flag1", "flag2", "flag3", "flag4", "flag5", "flag6", "flag7" };
+//char* _commands[] = {"help"};
+//int _command_flag_no [] = {1};
+
+/*
+* get tokens returns the entire stings array
+* @return char** to the input tokens array
+*/
+char** get_tokens()
+{
+    return _input_tokens;
+}
+
+/*
+* get token function takes flag number and returns the token tokenized from input
+* @param int i the index to return
+* @return char* to the string
+*/
+char* get_token(int i)
+{
+    return _input_tokens[i];
+}
 
 /*
 * get_input takes a char pointer and writes input from scanf to it
 * @pram dest; the destination to store input from stdin
 */
-void get_input(char* dest)
+int get_input()
 {
-    int output = 0;
+    char* cmd_input = (char*)(malloc(sizeof(char)*COMMAND_INPUT_BUFFER));
     printf(">");
-    output = scanf("%s", dest);
-    if(output < 0)
+    //output = scanf("%s", dest);
+    if(fgets(cmd_input, COMMAND_INPUT_BUFFER, stdin) == NULL)
     {
-        printf("fatal internal error when recieveing input from function 'scanf'.\n");
-        exit(1);
+        printf("fatal internal error when recieveing input.\n");
+        return 2;
     }
+    int vaild_num_flags = 7;
+    const char delim  = ' ';
+    _input_tokens[0] = strtok(cmd_input, &delim);
+
+    for(int i = 1; i < vaild_num_flags; i++)
+    {
+        _input_tokens[i] = strtok(NULL, &delim);
+    }
+    //free(cmd_input);
+    return 0;
 }
 
 /*
-* entry point to program, contains main logic for csubatch program.
+* tests tokens sliced form input  and returns the command
 */
-int main()
+int parse_command()
 {
-    printf("Weclome to %s's batch job scheduler Version 1.0\nType 'help' to find out more about CSUbatch commands.\n", PROGRAM_AUTHOR);
-    //initalize a char pointer for command input
-    char* cmd_input = (char*)(malloc(sizeof(char)*COMMAND_INPUT_BUFFER));
-    int cont = 1;
-    while(cont)
+    get_input();
+    if(strstr(_input_tokens[0], "quit"))
     {
-        get_input(cmd_input);
-        if(strcmp(cmd_input, "quit") == 0)
-        {
-            //todo: implement printing statistics.
-            printf("message to display when exiting csubatch\n");
-            cont = 0;
-        }
-        else if(strstr(cmd_input, "help")) //if string contains substring "help"
-        {
-            printf("DEBUG: help command was detected\n");
-            //todo: call help module here.
-        }
-        else if(strstr(cmd_input, "run"))
-        {
-            //todo: need to split input into name, time, and prioity
-            printf("DEBUG: command parsing not implemented, submitting a default job\n");
-            submit_job("default-job", 10, 1);
-        }
-        else if(strstr(cmd_input, "list"))
-        {
-            //todo: implement a queue traversal, and format a table
-        }
-        else if(strcmp(cmd_input, "sjf") == 0)
-        {
-            //switch scheduling policy
-            change_scheduling_policy(0);
-        }
-        else if(strcmp(cmd_input, "fcfs") == 0)
-        {
-            //switch scheduling policy
-            change_scheduling_policy(1);
-        }
-        else if(strcmp(cmd_input, "priority") == 0)
-        {
-            //switch scheduling policy
-            change_scheduling_policy(2);
-        }
-        else
-        {
-            //invaild command message
-            printf("invalid command.\n"); 
-        }
+        return QUIT;
     }
-    free(cmd_input);
-    //todo: write a free queue function that frees all the nodes. (implement in scheudling.c)
+    else if(strstr(_input_tokens[0], "help") && _input_tokens[2] == NULL) //strstr = if string contains substring "help"
+    {
+        
+        return HELP;
+    }
+    else if(strstr(_input_tokens[0], "run"))
+    {
+        return RUN;
+    }
+    else if(strstr(_input_tokens[0], "list"))
+    {
+        //list_jobs();
+        return  LIST;
+    }
+    else if(strstr(_input_tokens[0], "fcfs"))
+    {
+        //switch scheduling policy
+        //change_scheduling_policy(0);
+        return CMD_FCFS;
+    }
+    else if(strstr(_input_tokens[0], "sjf") )
+    {
+        //switch scheduling policy
+        return CMD_SJF;
+    }
+    else if(strstr(_input_tokens[0], "priority"))
+    {
+        //switch scheduling policy
+        return CMD_PRIORITY;
+    }
+    else
+    {
+        //invaild command message
+        return CMD_INVAILD;
+    }
 }
+    
