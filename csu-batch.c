@@ -10,11 +10,16 @@ Purpose: Main for csu batch
 //other c files
 #include "command-parser.h"
 #include "job-queue.h"
-#include "enums.h"
+#include "global.h"
 
 enum program_state _state = RUNNING;
 enum command_flag _command = DEFAULT;
 
+/*
+* call create job function handles job submission
+* @param
+* @return
+*/
 void call_create_job()
 {
     char* job_name = malloc(sizeof(char) * FLAG_INPUT_BUFFER);

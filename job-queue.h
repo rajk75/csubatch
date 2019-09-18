@@ -8,7 +8,7 @@ int deconstruct_queue();
 
 char* get_current_scheduling_policy();
 
-int move_pointer(struct node* new_node);
+void move_pointer(struct node* new_node);
 
 int insert_node(struct node* new_node);
 

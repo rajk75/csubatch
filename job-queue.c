@@ -4,7 +4,7 @@
 //inlcude header files
 #include "csu-batch.h"
 #include "job-queue.h"
-#include "enums.h"
+#include "global.h"
 enum scheduling_policy _scheduling_policy = FCFS; //internal var, determines how the scheduling module will insert a new job. 0: fcfs, 1: sjf, 2: priority
 
 struct job
@@ -76,22 +76,61 @@ char* get_current_scheduling_policy()
 }
 
 /*
-* move pointer function moves the _cur pointer to the node before where the node to be inserted should be, based on scheduling policy
-* @return 0 or 1, 1 if failure.
+* get ndoe data returns job data 
+* @param
+* @return
 */
-int move_pointer(struct node* new_node)
+int get_job_data_from_node(struct node* target)
 {
+    switch(_scheduling_policy)
+    {
+        case FCFS:
+            return target->data->arrival_time;
+        break;
+        case SJF:
+            return target->data->execution_time;
+        break;
+        case PRIORITY:
+            return target->data->priority;
+    }
+    printf("fatal error: scheduling policy invaild");
+    exit(1);
+    return -1;
+}
+
+/*
+* move pointer function moves the _cur pointer to the node before where the node to be inserted should be, based on scheduling policy
+*/
+void move_pointer(struct node* new_node)
+{
+    //TODO set error start and let csubatch handle errors
     if(_head == NULL)
     {
-        printf("fatal error, tried to move pointer before queue was populated.");
+        printf("job queue unpopulated error! exiting...");
         exit(1);
     }
     //start pointer at front  of queue.
-    _cur = _head;
     if(_head->data == NULL)
     {
-        return 0;
+        printf("null job data error! exiting...");
+        exit(1);
     }
+    _cur = _head;
+    if(_scheduling_policy != FCFS) //dangerous, assums vaild scheduling policy number.
+    {
+        while(_cur->next != NULL && get_job_data_from_node(_cur->next) < get_job_data_from_node(new_node))
+        {
+            _cur = _cur->next;
+        }   
+    }
+    else
+    {
+        while(_cur->next != NULL)
+        {
+            _cur = _cur->next;
+        }
+    }
+    /*
     if (_scheduling_policy == FCFS) //if the scheduling policy is fcfs
     {
         //simply move to node at the end of the queue
@@ -120,7 +159,7 @@ int move_pointer(struct node* new_node)
     {
         return 1;
     }
-    return 0;
+    */
 }
 
 /*
@@ -132,18 +171,51 @@ int insert_node(struct node* new_node)
 {
     if(_head == NULL || _cur == NULL)
     {
+        //should be unreachable
         return 1;
     }
-    else if(_cur == _head && _cur->next == NULL)
+    int set = 0;
+    if(_scheduling_policy != FCFS && get_job_data_from_node(new_node) < get_job_data_from_node(_cur))
     {
+        new_node->next = _cur;
         _head = new_node;
-        _head->next = _cur;
+        set = 1;
     }
-    else if(_cur->next == NULL) //if next is 0, then at the end of queue, therefore just set next to new node.
+    else if(_scheduling_policy == FCFS)
+    {
+        _cur->next = new_node;
+        set = 1;
+    }
+    /*
+    switch(_scheduling_policy)
+    {
+        case FCFS:
+            _cur->next = new_node;
+            set =1;
+        break;
+        case SJF:
+            if(new_node->data->execution_time < _cur->data->execution_time)
+            {
+                new_node->next = _cur;
+                _head = new_node;
+                set = 1;
+            }
+        break;
+        case PRIORITY:
+            if(new_node->data->priority < _cur->data->priority)
+            {
+                new_node->next = _cur;
+                _head = new_node;
+                set = 1;
+            }
+        break;    
+    }
+    */
+    if(_cur->next == NULL && !set) //if next is NULL, then at the end of queue, therefore _cur set next to new_node.
     {
         _cur->next = new_node;
     }
-    else
+    if(!set)//pointer to the left of where new_node needs to be inserted
     {
         new_node->next = _cur->next;
         _cur->next = new_node;
@@ -176,7 +248,7 @@ int find_total_waiting_time(struct node* new_node)
 */
 int submit_job(char* job_name, int job_execution_time, int job_priority)
 {
-    if(_head == 0)
+    if(_head == NULL)
     {
         _head = (struct node*)(malloc(sizeof(struct node)));
         _head->data = NULL;
@@ -253,7 +325,7 @@ void selection_sort(struct node** node_arr)
                 flag1 = node_arr[i]->data->priority;
             break;  
         }
-        for(int j = j + 1; j < num_jobs; j++)
+        for(int j = i + 1; j < num_jobs; j++)
         {
             
             switch(_scheduling_policy)

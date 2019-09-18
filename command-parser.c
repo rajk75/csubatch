@@ -1,5 +1,5 @@
 /*
-Authors: James Ellerbee, Raj Kotak
+Authors: James Ellerbee
 Date: September 2019
 Purpose: project1 for cpsc 4175.
 */
@@ -11,18 +11,26 @@ Purpose: project1 for cpsc 4175.
 #include <stddef.h>
 //from project
 #include "command-parser.h"
-#include "enums.h"
+#include "global.h"
 
 char* _input_tokens[] = {"command", "flag1", "flag2", "flag3", "flag4", "flag5", "flag6", "flag7" };
 //char* _commands[] = {"help"};
 //int _command_flag_no [] = {1};
 
-
+/*
+* get tokens returns the entire stings array
+* @return char** to the input tokens array
+*/
 char** get_tokens()
 {
     return _input_tokens;
 }
 
+/*
+* get token function takes flag number and returns the token tokenized from input
+* @param int i the index to return
+* @return char* to the string
+*/
 char* get_token(int i)
 {
     return _input_tokens[i];
@@ -55,7 +63,7 @@ int get_input()
 }
 
 /*
-* tests inputted command and returns the command
+* tests tokens sliced form input  and returns the command
 */
 int parse_command()
 {
@@ -64,7 +72,7 @@ int parse_command()
     {
         return QUIT;
     }
-    else if(strstr(_input_tokens[0], "help")) //strstr = if string contains substring "help"
+    else if(strstr(_input_tokens[0], "help") && _input_tokens[2] == NULL) //strstr = if string contains substring "help"
     {
         
         return HELP;
