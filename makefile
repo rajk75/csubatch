@@ -1,8 +1,8 @@
 compile : 
-	gcc command-parser.c -o main -Wall
+	gcc csu-batch.c command-parser.c job-queue.c -o main -Wall
 
 compile-d :
-	gcc command-parser.c -o main -Wall -g
+	gcc csu-batch.c command-parser.c job-queue.c -o main -Wall -g
 
 run :
 	./main
