@@ -3,6 +3,7 @@
 #include <stdio.h>
 //inlcude header files
 #include "csu-batch.h"
+#include "job-queue.h"
 #include "enums.h"
 enum scheduling_policy _scheduling_policy = FCFS; //internal var, determines how the scheduling module will insert a new job. 0: fcfs, 1: sjf, 2: priority
 
@@ -91,7 +92,7 @@ int move_pointer(struct node* new_node)
     {
         return 0;
     }
-    if (_scheduling_policy == 0) //if the scheduling policy is fcfs
+    if (_scheduling_policy == FCFS) //if the scheduling policy is fcfs
     {
         //simply move to node at the end of the queue
         while(_cur->next != NULL)
@@ -99,7 +100,7 @@ int move_pointer(struct node* new_node)
             _cur = _cur->next;
         }
     }
-    else if (_scheduling_policy == 1)
+    else if (_scheduling_policy == SJF)
     {
         //shortest job first
         while(_cur->next != NULL && _cur->next->data->execution_time < new_node->data->execution_time)
@@ -107,7 +108,7 @@ int move_pointer(struct node* new_node)
             _cur = _cur->next;
         }
     }
-    else if (_scheduling_policy == 2)
+    else if (_scheduling_policy == PRIORITY)
     {
         //priority
         while(_cur->next != NULL && new_node->data->priority < _cur->next->data->priority)
@@ -133,7 +134,7 @@ int insert_node(struct node* new_node)
     {
         return 1;
     }
-    else if(_cur == _head)
+    else if(_cur == _head && _cur->next == NULL)
     {
         _head = new_node;
         _head->next = _cur;
@@ -234,29 +235,40 @@ void list_jobs()
     }
 }
 
+//TODO fix me
 void selection_sort(struct node** node_arr)
 {
+    int flag1, flag2;
     for(int i = 0; i < num_jobs; i++)
     {
+        switch(_scheduling_policy)
+        {
+          case FCFS:
+                flag1= node_arr[i]->data->arrival_time;
+            break;
+            case SJF:
+                flag1 = node_arr[i]->data->execution_time;
+            break;
+            case PRIORITY:
+                flag1 = node_arr[i]->data->priority;
+            break;  
+        }
         for(int j = j + 1; j < num_jobs; j++)
         {
-            int flag1, flag2 = 0;
+            
             switch(_scheduling_policy)
             {
                 case FCFS:
-                    flag1 = node_arr[j]->data->arrival_time;
-                    flag2 = node_arr[i]->data->arrival_time;
+                    flag2 = node_arr[j]->data->arrival_time;
                 break;
                 case SJF:
-                    flag1 = node_arr[j]->data->execution_time;
-                    flag2 = node_arr[i]->data->execution_time;
+                    flag2 = node_arr[j]->data->execution_time;
                 break;
                 case PRIORITY:
-                    flag1 = node_arr[j]->data->priority;
-                    flag2 = node_arr[i]->data->priority;
+                    flag2 = node_arr[j]->data->priority;
                 break;
             }
-            if(flag1 < flag2)
+            if(flag1 > flag2)
             {
                 struct node* temp = node_arr[i];
                 node_arr[i] = node_arr[j];
@@ -282,12 +294,12 @@ void reorder_nodes()
         _cur = _cur->next;
     }
 
-    selection_sort(node_arr);
+    //selection_sort(node_arr);
     //sort the array based on scheduling policy
-    /*
+
     switch(_scheduling_policy)
     {
-        case 0:
+        case FCFS:
             // first come first serve based on arrival time, smallest arrival time first
             //TODO: write a function for this
             for(int i = 0; i < num_jobs; i++)
@@ -303,7 +315,7 @@ void reorder_nodes()
                 }
             }
         break; 
-        case 1:
+        case SJF:
             //shortest job first, smallest execution time first
             for(int i = 0; i < num_jobs; i++)
             {
@@ -318,7 +330,7 @@ void reorder_nodes()
                 }
             }
         break;
-        case 2:
+        case PRIORITY:
             //priority 
             for(int i = 0; i < num_jobs; i++)
             {
@@ -334,7 +346,7 @@ void reorder_nodes()
             }
         break;
     }
-    */
+
     _head = node_arr[0];
     _cur = _head;
     for(int i = 1; i < num_jobs; i++)
@@ -343,7 +355,9 @@ void reorder_nodes()
         _cur = _cur->next;
     }
     _cur->next = NULL;
+    free(node_arr);
     }
+    
 }
 
 /*
@@ -354,10 +368,6 @@ void reorder_nodes()
 */
 int change_scheduling_policy(int new_policy)
 {
-    if(new_policy < 0 || new_policy > 2)
-    {
-        return 1;
-    }
     if(_scheduling_policy == new_policy)
     {
         printf("Scheduling policy already set to %s. No jobs have been rescheduled.\n", get_current_scheduling_policy());
