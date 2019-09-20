@@ -22,6 +22,7 @@ struct node
     struct node* next;
 };
 
+//initializing
 int num_jobs = 0;
 struct node* _head = 0; //because this is a queue, the front of the queue will always be head.
 struct node* _cur = 0;
@@ -52,7 +53,7 @@ int deconstruct_queue()
 
 /*
 * the get current scheduling policy function returns the name of the current scheduling policy
-*
+* @return char* the name of the current policy
 */
 char* get_current_scheduling_policy()
 {
@@ -76,7 +77,7 @@ char* get_current_scheduling_policy()
 }
 
 /*
-* get ndoe data returns job data 
+* get ndoe data returns job data based on scheduling policy
 * @param
 * @return
 */
@@ -310,6 +311,21 @@ void list_jobs()
 //TODO fix me
 void selection_sort(struct node** node_arr)
 {
+    for(int i = 0; i < num_jobs; i++)
+    {
+        for(int j = i + 1; j < num_jobs; j++)
+        {
+            if(get_job_data_from_node(node_arr[i]) > get_job_data_from_node(node_arr[j]))
+            {
+                struct node* temp = node_arr[i];
+                node_arr[i] = node_arr[j];
+                node_arr[j] = temp;
+            }
+        }
+    }
+   
+    //unoptimized code
+    /*
     int flag1, flag2;
     for(int i = 0; i < num_jobs; i++)
     {
@@ -348,6 +364,7 @@ void selection_sort(struct node** node_arr)
             }
         }
     }
+    */
 }
 
 /*

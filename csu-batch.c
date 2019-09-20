@@ -17,6 +17,15 @@ enum program_state _state = RUNNING;
 enum command_flag _command = DEFAULT;
 
 /*
+* this function return the state of the main process
+* @param
+* @return
+*/
+enum program_state get_program_state()
+{
+    return _state;
+}
+/*
 * call create job function handles job submission
 * @param
 * @return
@@ -67,7 +76,9 @@ int main()
             printf("program in erroneous state, exiting...");
             exit(1);
         }
+       //if child process, use set command instead and use data from jobs array in benchmark
         _command  = parse_command();
+        
         switch(_command)
         {
             case CMD_ERROR:
@@ -95,6 +106,7 @@ int main()
             break;
             case TEST:
                 printf("benchmark module in development");
+                //call function that forks the process
             break;
             case QUIT:
                 _state = EXIT;
@@ -105,7 +117,7 @@ int main()
         }
     }
     //functions to be called before exiting program.
-    //TODO; call test module calculate
+    //TODO; join benchmark thread to main, printing statistics
     printf("DEBUG: message to display when exiting csubatch\n");
     deconstruct_queue();
 }

@@ -62,6 +62,14 @@ int get_input()
     return 0;
 }
 
+//TODO write 
+/*
+* set input function takes a string and returns command flags
+* @param
+* @return
+*/
+//int set_input
+
 /*
 * tests tokens sliced form input  and returns the command
 */
