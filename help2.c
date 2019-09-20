@@ -27,7 +27,7 @@ int main(){
 
 //This fuction takes a string as a parameter and decides on what command to print.(pass "all" to print all help commands).
 void help(char* helpCommand){
-    if(helpCommand == NULL)
+    if(helpCommand == NULL)//if no flag
     {
         printAll();
     }
