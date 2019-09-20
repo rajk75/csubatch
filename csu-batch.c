@@ -11,6 +11,7 @@ Purpose: Main for csu batch
 #include "command-parser.h"
 #include "job-queue.h"
 #include "global.h"
+#include "help2.h"
 
 enum program_state _state = RUNNING;
 enum command_flag _command = DEFAULT;
@@ -50,6 +51,11 @@ void call_create_job()
     submit_job(job_name, job_execution_time, job_priority);
 }
 
+void call_help_module()
+{
+    help(get_token(1));
+}
+
 int main()
 {
     printf("Weclome to %s's batch job scheduler Version %s\nType 'help' to find out more about CSUbatch commands.\n", PROGRAM_AUTHOR, VERSION_NUM);
@@ -68,8 +74,9 @@ int main()
                 printf("COMMAND ERROR.\n"); 
             break;
             case HELP:
-                printf("help module in devleopment\n");
+                //printf("help module in devleopment\n");
                 //todo: interface with help module here.
+                call_help_module();
             break;
             case RUN:
                 call_create_job();

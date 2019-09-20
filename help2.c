@@ -11,12 +11,10 @@ char chr;
 char description[100];
 
 
-void help(char helpCommand[]);
-void printOne(char flag[]);
-void printAll();
+//moved function definitions to hearder,
 
 //Remove main when done testing(James will remove it). Call help() and pass "all" to print all the help commands or pass a specific word to print that command.
-
+/*
 int main(){
     
     char flag[20];
@@ -25,7 +23,7 @@ int main(){
     scanf("%s", flag);
     help(flag);
 }
-
+*/
 //This fuction takes a string as a parameter and decides on what command to print.(pass "all" to print all help commands).
 
 void help(char helpCommand[]){
