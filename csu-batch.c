@@ -71,7 +71,7 @@ int main()
         switch(_command)
         {
             case CMD_ERROR:
-                printf("COMMAND ERROR.\n"); 
+                printf("COMMAND ERROR.\n");
             break;
             case HELP:
                 //printf("help module in devleopment\n");
@@ -105,6 +105,7 @@ int main()
         }
     }
     //functions to be called before exiting program.
+    //TODO; call test module calculate
     printf("DEBUG: message to display when exiting csubatch\n");
     deconstruct_queue();
 }

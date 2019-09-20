@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "help2.h"
 
 FILE *ptr;
 char chr;
@@ -24,15 +24,24 @@ int main(){
     help(flag);
 }
 */
-//This fuction takes a string as a parameter and decides on what command to print.(pass "all" to print all help commands).
 
-void help(char helpCommand[]){
-    if(strcmp(helpCommand,"all") != 0){
+//This fuction takes a string as a parameter and decides on what command to print.(pass "all" to print all help commands).
+void help(char* helpCommand){
+    if(helpCommand == NULL)
+    {
+        printAll();
+    }
+    else if(strcmp(helpCommand,"all") != 0){
         printOne(helpCommand);
     }
     else if(strcmp(helpCommand,"all") == 0){
         printAll();
     }
+    else
+    {
+        printf("Not a vaild command!");
+    }
+    
 }
 
 //This function is called from help function if it is determined that a single command needs to be printed. 
