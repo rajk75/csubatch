@@ -15,10 +15,10 @@ enum signal* get_scheduling_sig()
 
 void prototype_dispatching()
 {
-    printf("[DISPATCHING THREAD] DEBUG: removing completed job in 5...\n");
+    //printf("[DISPATCHING THREAD] DEBUG: removing completed job in 5...\n");
     sleep(5);
     remove_job();
-    printf("[DISPATCHING THREAD] DEBUG: job removed\n");
+    //printf("[DISPATCHING THREAD] DEBUG: job removed\n");
 }
 
 void* dispatching_loop()
@@ -28,7 +28,7 @@ void* dispatching_loop()
     {
         if(scheduling_sig == READY)
         {
-            printf("[DISPATCHING TRHEAD] DEBUG: ready to excev\n");
+            //printf("[DISPATCHING TRHEAD] DEBUG: ready to excev\n");
             prototype_dispatching();
             /*
             switch(pid = fork())

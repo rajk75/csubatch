@@ -47,8 +47,7 @@ int get_input()
     //output = scanf("%s", dest);
     if(fgets(cmd_input, COMMAND_INPUT_BUFFER, stdin) == NULL)
     {
-        printf("fatal internal error when recieveing input.\n");
-        return 2;
+        perror("fatal internal error when recieveing input.\n");
     }
     int vaild_num_flags = 7;
     const char delim  = ' ';
