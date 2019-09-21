@@ -1,5 +1,7 @@
 #ifndef JOBQUEUE
 #define JOBQUEUE
+
+#include <pthread.h>
 #include "global.h"
 struct job
 {
@@ -15,6 +17,10 @@ struct node
     struct job* data;
     struct node* next;
 };
+
+pthread_mutex_t job_q_mu;
+
+void _init_job_queue();
 
 struct node* peek();
 

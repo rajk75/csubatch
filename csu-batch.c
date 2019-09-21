@@ -71,8 +71,9 @@ void call_help_module()
 int main()
 {
     pthread_t scheduling;
-
-    if(pthread_create(&scheduling, NULL, &scheduling_loop, NULL))
+    _init_job_queue();
+    char* signal = NULL;
+    if(pthread_create(&scheduling, NULL, &scheduling_loop, signal))
     {
         fprintf(stderr, "Error creating thrad.");
         return 1;

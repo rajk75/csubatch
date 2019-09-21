@@ -6,11 +6,17 @@
 #include "global.h"
 
 //initializing
+enum scheduling_policy _scheduling_policy = FCFS;
+
 int num_jobs = 0;
 struct node* _head = NULL; //because this is a queue, the front of the queue will always be head.
 struct node* _cur = NULL;
 
-enum scheduling_policy _scheduling_policy = FCFS;
+
+void _init_job_queue()
+{
+    pthread_mutex_init(&job_q_mu, NULL);
+}
 
 /**
  * The peek function returns the pointer to head
@@ -258,7 +264,9 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
     struct node* new_node = NULL;
     if(_head->data == NULL)
     {
+        pthread_mutex_lock(&job_q_mu);
         _head->data = new_job;
+        pthread_mutex_unlock(&job_q_mu);
         num_jobs++;
     }
     else //else create a new node
@@ -267,7 +275,9 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
         new_node->data = new_job;
         new_node->next = NULL;
         move_pointer(new_node);
+        pthread_mutex_lock(&job_q_mu);
         enqueue(new_node);
+        pthread_mutex_unlock(&job_q_mu);
     }
     int time_to_wait = 0;
     if(num_jobs > 1 && new_node != NULL)

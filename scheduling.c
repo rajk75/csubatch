@@ -4,22 +4,27 @@
 #include "job-queue.h"
 #include "global.h"
 
-void* scheduling_loop(void* singal_jsub)
+void* scheduling_loop(void* signal_jsub)
 {
     while(get_program_state() == RUNNING)
     {
         //set head to run
         struct node* head = peek();
-        if(head->data->progress == ISNOTRUNNING)
+        if(head != NULL)
         {
-            //TODO; signal dispatcher that a job is ready to be excev'd
-            if(singal_jsub != NULL)
+            if(head->data->progress == ISNOTRUNNING)
             {
-                //do the signal
+                //TODO; signal dispatcher that a job is ready to be excev'd
+                if(signal_jsub != NULL)
+                {
+                    //do the signal
+                }
+                //set job to running
+                pthread_mutex_lock(&job_q_mu);
+                head->data->progress = ISRUNNING;
+                pthread_mutex_unlock(&job_q_mu);
             }
-            //set job to running
-            head->data->progress = ISRUNNING;
-        }
+        }        
     }
     return NULL;
 }
