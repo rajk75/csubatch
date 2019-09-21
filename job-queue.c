@@ -2,34 +2,26 @@
 #include <stdlib.h>
 #include <stdio.h>
 //inlcude header files
-#include "csu-batch.h"
 #include "job-queue.h"
 #include "global.h"
-enum scheduling_policy _scheduling_policy = FCFS; //internal var, determines how the scheduling module will insert a new job. 0: fcfs, 1: sjf, 2: priority
-
-struct job
-{
-    char* name;
-    int execution_time;
-    int priority;
-    time_t arrival_time;
-    int progress;
-};
-
-struct node
-{
-    struct job* data;
-    struct node* next;
-};
 
 //initializing
 int num_jobs = 0;
-struct node* _head = 0; //because this is a queue, the front of the queue will always be head.
-struct node* _cur = 0;
+struct node* _head = NULL; //because this is a queue, the front of the queue will always be head.
+struct node* _cur = NULL;
 
-//todo: write a restructing algorithm
+enum scheduling_policy _scheduling_policy = FCFS;
 
-/*
+/**
+ * The peek function returns the pointer to head
+ * @return struct node*
+ */
+struct node* peek()
+{
+    return _head;
+}
+
+/**
 * decontruct function traverse though queue structure to free pointers
 */
 int deconstruct_queue()
@@ -51,7 +43,7 @@ int deconstruct_queue()
     return 0;
 }
 
-/*
+/**
 * the get current scheduling policy function returns the name of the current scheduling policy
 * @return char* the name of the current policy
 */
@@ -76,7 +68,7 @@ char* get_current_scheduling_policy()
     return policy_name;
 }
 
-/*
+/**
 * get ndoe data returns job data based on scheduling policy
 * @param
 * @return
@@ -130,7 +122,7 @@ void move_pointer(struct node* new_node)
         {
             _cur = _cur->next;
         }
-    }
+    }     
     /*
     if (_scheduling_policy == FCFS) //if the scheduling policy is fcfs
     {
@@ -140,7 +132,7 @@ void move_pointer(struct node* new_node)
             _cur = _cur->next;
         }
     }
-    else if (_scheduling_policy == SJF)
+    else if (_scheduling_policy == SJF) * 
     {
         //shortest job first
         while(_cur->next != NULL && _cur->next->data->execution_time < new_node->data->execution_time)
@@ -163,12 +155,12 @@ void move_pointer(struct node* new_node)
     */
 }
 
-/*
-* the insert node function handles inserting the new node, to _cur next pointer
+/**
+* the enequeue function handles inserting the new node, to _cur next pointer
 * @param new_node; node to be inserted
 * @return 0 or 1; 1 on failure
 */
-int insert_node(struct node* new_node)
+int enqueue(struct node* new_node)
 {
     if(_head == NULL || _cur == NULL)
     {
@@ -190,7 +182,7 @@ int insert_node(struct node* new_node)
     /*
     switch(_scheduling_policy)
     {
-        case FCFS:
+        case FCFS: * 
             _cur->next = new_node;
             set =1;
         break;
@@ -240,7 +232,7 @@ int find_total_waiting_time(struct node* new_node)
     return total_time;
 }
 
-/*
+/**
 * submit_job function handles creating and pushing a new job onto the job queue structure.
 * @param job_name, a char pointer that contains the job name
 * @param job_execution_time, an int that conveys how long the job will take to complete
@@ -261,6 +253,7 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
     new_job->execution_time = job_execution_time;
     new_job->priority = job_priority;
     time(&(new_job->arrival_time));
+    new_job->progress = ISNOTRUNNING;
     //if head data is null asign new job to head->data
     struct node* new_node = NULL;
     if(_head->data == NULL)
@@ -274,7 +267,7 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
         new_node->data = new_job;
         new_node->next = NULL;
         move_pointer(new_node);
-        insert_node(new_node);
+        enqueue(new_node);
     }
     int time_to_wait = 0;
     if(num_jobs > 1 && new_node != NULL)
@@ -283,6 +276,11 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
     }
     printf("Job %s was sumbitted.\nTotal number of jobs in the queue: %d\nExpected waiting time: %d seconds\nScheduling Policy: %s\n", job_name, num_jobs, time_to_wait, get_current_scheduling_policy());
     return 0;
+}
+
+const char* progress_to_string(struct job* target)
+{
+    return target->progress == ISRUNNING ? "run" : " ";
 }
 
 /*
@@ -296,14 +294,14 @@ void list_jobs()
     {
         return;
     }
+    //TODO; fix formatting for printing
     printf("Name\tCPU_time\tPri\tArrival_time\tProgress\n");
-    //todo: traverse queue and print name cpu time, prioity, arrival time, and progress.
     _cur = _head;
     while(_cur != NULL)
     {
         struct job* cur_job =  _cur->data;
         struct tm* time = localtime(&(cur_job->arrival_time));
-        printf("%s\t%d\t\t%d\t%d:%d:%d\tN/I\n", cur_job->name, cur_job->execution_time, cur_job->priority, time->tm_hour, time->tm_min, time->tm_sec);
+        printf("%s\t%d\t\t%d\t%d:%d:%d\t%s\n", cur_job->name, cur_job->execution_time, cur_job->priority, time->tm_hour, time->tm_min, time->tm_sec, progress_to_string(cur_job));
         _cur = _cur->next;
     }
 }
@@ -323,48 +321,6 @@ void selection_sort(struct node** node_arr)
             }
         }
     }
-   
-    //unoptimized code
-    /*
-    int flag1, flag2;
-    for(int i = 0; i < num_jobs; i++)
-    {
-        switch(_scheduling_policy)
-        {
-          case FCFS:
-                flag1= node_arr[i]->data->arrival_time;
-            break;
-            case SJF:
-                flag1 = node_arr[i]->data->execution_time;
-            break;
-            case PRIORITY:
-                flag1 = node_arr[i]->data->priority;
-            break;  
-        }
-        for(int j = i + 1; j < num_jobs; j++)
-        {
-            
-            switch(_scheduling_policy)
-            {
-                case FCFS:
-                    flag2 = node_arr[j]->data->arrival_time;
-                break;
-                case SJF:
-                    flag2 = node_arr[j]->data->execution_time;
-                break;
-                case PRIORITY:
-                    flag2 = node_arr[j]->data->priority;
-                break;
-            }
-            if(flag1 > flag2)
-            {
-                struct node* temp = node_arr[i];
-                node_arr[i] = node_arr[j];
-                node_arr[j] = temp;
-            }
-        }
-    }
-    */
 }
 
 /*

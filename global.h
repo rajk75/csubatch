@@ -28,4 +28,9 @@ enum scheduling_policy
     SJF = 21,
     PRIORITY = 22
 };
+enum job_state
+{
+    ISRUNNING = 31,
+    ISNOTRUNNING = 32
+};
 #endif

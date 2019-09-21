@@ -2,6 +2,7 @@
 Author: James Ellerbee
 Purpose: Main for csu batch
 */
+#include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -12,8 +13,9 @@ Purpose: Main for csu batch
 #include "job-queue.h"
 #include "global.h"
 #include "help2.h"
+#include "scheduling.h"
 
-enum program_state _state = RUNNING;
+enum program_state _state = RUNNING; //should only be read from
 enum command_flag _command = DEFAULT;
 
 /*
@@ -25,6 +27,7 @@ enum program_state get_program_state()
 {
     return _state;
 }
+
 /*
 * call create job function handles job submission
 * @param
@@ -67,14 +70,22 @@ void call_help_module()
 
 int main()
 {
+    pthread_t scheduling;
+
+    if(pthread_create(&scheduling, NULL, &scheduling_loop, NULL))
+    {
+        fprintf(stderr, "Error creating thrad.");
+        return 1;
+    }
+
     printf("Weclome to %s's batch job scheduler Version %s\nType 'help' to find out more about CSUbatch commands.\n", PROGRAM_AUTHOR, VERSION_NUM);
     //TODO: pthread_create
     while(_state != EXIT)
     {
         if(_state == ERROR)
         {
-            printf("program in erroneous state, exiting...");
-            exit(1);
+            fprintf(stderr,"program in erroneous state, exiting...");
+            return 1;
         }
        //if child process, use set command instead and use data from jobs array in benchmark
         _command  = parse_command();
@@ -105,7 +116,7 @@ int main()
                 change_scheduling_policy(PRIORITY);
             break;
             case TEST:
-                printf("benchmark module in development");
+                printf("Benchmark module in development");
                 //call function that forks the process
             break;
             case QUIT:

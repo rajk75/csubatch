@@ -65,8 +65,8 @@ void printOne(char flag[]){
     }
     toCompare[cntr2] = '\0';
     
-    FILE *abc; 
-    int descriptionctr = 0;
+    //FILE *abc; 
+    //int descriptionctr = 0;
     ptr = fopen("file.txt", "r");
     if(ptr == NULL){
         printf("Cannot open file\n");
@@ -79,7 +79,7 @@ void printOne(char flag[]){
     int stop = 0;
     while(chr != EOF  && stop != 1){
         if(strcmp("^",&chr) == 0){
-            abc = ptr;
+            //abc = ptr;
             chr = fgetc(ptr);
             while(strcmp(")",&chr) != 0){
                 if(trvse < cmdWd){
@@ -127,8 +127,8 @@ void printOne(char flag[]){
 //This function is called from help function if it is determined that all commands needs to be printed.
 
 void printAll(){
-    FILE *abc; 
-    int descriptionctr = 0;
+    //FILE *abc; 
+    //int descriptionctr = 0;
     ptr = fopen("file.txt", "r");
     if(ptr == NULL){
         printf("Cannot open file\n");
