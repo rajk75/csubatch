@@ -14,6 +14,7 @@ Purpose: Main for csu batch
 #include "global.h"
 #include "help2.h"
 #include "scheduling.h"
+#include "dispatching.h"
 
 enum program_state _state = RUNNING; //should only be read from
 enum command_flag _command = DEFAULT;
@@ -70,12 +71,18 @@ void call_help_module()
 
 int main()
 {
-    pthread_t scheduling;
+    pthread_t scheduling_t;
+    pthread_t dispatching_t;
     _init_job_queue();
-    char* signal = NULL;
-    if(pthread_create(&scheduling, NULL, &scheduling_loop, signal))
+    //if(pthread_create(&scheduling_t, NULL, &scheduling_loop, &scheduling_sig))
+    if(pthread_create(&scheduling_t, NULL, &scheduling_loop, get_scheduling_sig())) //use this if statement when dispatching module is setup
     {
-        fprintf(stderr, "Error creating thrad.");
+        fprintf(stderr, "Error creating scheduling thread.");
+        return 1;
+    }
+    if(pthread_create(&dispatching_t, NULL, &dispatching_loop, NULL))
+    {
+        fprintf(stderr, "Error creating dispatching thread");
         return 1;
     }
 

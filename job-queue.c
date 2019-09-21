@@ -223,6 +223,22 @@ int enqueue(struct node* new_node)
     return 0;
 }
 
+struct node* dequeue()
+{
+    struct node* old_head = _head;
+    if(_head->next == NULL)
+    {
+        _head = NULL;
+    }
+    else
+    {
+        _head = _head->next;
+    }
+    old_head->next = NULL;
+    num_jobs--;
+    return old_head;
+}
+
 /* 
 * find total waiting time function traverses the queue and tallies exeuction time of all submitted jobs
 */
@@ -264,6 +280,7 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
     struct node* new_node = NULL;
     if(_head->data == NULL)
     {
+        //TODO; this should be in insert node
         pthread_mutex_lock(&job_q_mu);
         _head->data = new_job;
         pthread_mutex_unlock(&job_q_mu);
@@ -277,6 +294,7 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
         move_pointer(new_node);
         pthread_mutex_lock(&job_q_mu);
         enqueue(new_node);
+        //TODO; notify job entry
         pthread_mutex_unlock(&job_q_mu);
     }
     int time_to_wait = 0;
@@ -286,6 +304,14 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
     }
     printf("Job %s was sumbitted.\nTotal number of jobs in the queue: %d\nExpected waiting time: %d seconds\nScheduling Policy: %s\n", job_name, num_jobs, time_to_wait, get_current_scheduling_policy());
     return 0;
+}
+
+struct job* remove_job()
+{
+    struct node* old_head = dequeue();
+    struct job* old_job = old_head->data;
+    //TODO; calculations to do on job finish.
+    return old_job;
 }
 
 const char* progress_to_string(struct job* target)

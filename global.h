@@ -22,15 +22,23 @@ enum command_flag
     QUIT = 19,
     DEFAULT = 101
 };
+
 enum scheduling_policy
 {
     FCFS = 20,
     SJF = 21,
     PRIORITY = 22
 };
+
 enum job_state
 {
-    ISRUNNING = 31,
-    ISNOTRUNNING = 32
+    ISRUNNING = 30,
+    ISNOTRUNNING = 31
+};
+
+enum signal
+{
+    READY = 40,
+    NOTREADY = 41
 };
 #endif

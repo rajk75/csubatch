@@ -32,9 +32,13 @@ void move_pointer(struct node* new_node);
 
 int enqueue(struct node* new_node);
 
+struct node* dequeue();
+
 int find_total_waiting_time(struct node* new_node);
 
 int submit_job(char* job_name, int job_execution_time, int job_priority);
+
+struct job* remove_job();
 
 void list_jobs();
 
