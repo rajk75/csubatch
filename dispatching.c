@@ -44,20 +44,16 @@ void* dispatching_loop()
                     perror("error when creating dispatching process");
                 break;
                 case 0:
-                    //pid = child process
+                    //pid is child process
                     //execv replaces the process returned by the fork, therefore no extra precuations need to be taken
                     //get head process name
                     execv("process", my_args);
-                    exit(EXIT);
+                    perror("dispatching loop: execv failed.");
+                    exit(EXIT_FAILURE);
                 break;
                 default:
-                    
                     while(waitpid(pid, &status, WNOHANG) == 0);
-                    // {
-                    //     printf("DEBUG: process not finished");
-                    // }
                     //after execution dequeue the job and notify that a job has completed
-                    //sleep(1);
                     remove_job();
                 break;
             } 
