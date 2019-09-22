@@ -20,7 +20,8 @@ enum command_flag
     CMD_PRIORITY = 17,
     TEST = 18,
     QUIT = 19,
-    DEFAULT = 101
+    DEFAULT = 101,
+    DONOTHING = 111
 };
 
 enum scheduling_policy

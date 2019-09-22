@@ -85,9 +85,7 @@ int main()
         fprintf(stderr, "Error creating dispatching thread");
         return 1;
     }
-
     printf("Weclome to %s's batch job scheduler Version %s\nType 'help' to find out more about CSUbatch commands.\n", PROGRAM_AUTHOR, VERSION_NUM);
-    //TODO: pthread_create
     while(_state != EXIT)
     {
         if(_state == ERROR)
@@ -100,6 +98,7 @@ int main()
         
         switch(_command)
         {
+            case DONOTHING: break;
             case CMD_ERROR:
                 printf("COMMAND ERROR.\n");
             break;

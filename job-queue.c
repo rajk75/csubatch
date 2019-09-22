@@ -12,7 +12,9 @@ int num_jobs = 0;
 struct node* _head = NULL; //because this is a queue, the front of the queue will always be head.
 struct node* _cur = NULL;
 
-
+/**
+ * the init job queue intitalizes defintions
+ */
 void _init_job_queue()
 {
     pthread_mutex_init(&job_q_mu, NULL);
@@ -129,36 +131,6 @@ void move_pointer(struct node* new_node)
             _cur = _cur->next;
         }
     }     
-    /*
-    if (_scheduling_policy == FCFS) //if the scheduling policy is fcfs
-    {
-        //simply move to node at the end of the queue
-        while(_cur->next != NULL)
-        {
-            _cur = _cur->next;
-        }
-    }
-    else if (_scheduling_policy == SJF) * 
-    {
-        //shortest job first
-        while(_cur->next != NULL && _cur->next->data->execution_time < new_node->data->execution_time)
-        {
-            _cur = _cur->next;
-        }
-    }
-    else if (_scheduling_policy == PRIORITY)
-    {
-        //priority
-        while(_cur->next != NULL && new_node->data->priority < _cur->next->data->priority)
-        {
-            _cur = _cur->next;
-        }
-    }
-    else
-    {
-        return 1;
-    }
-    */
 }
 
 /**
@@ -185,31 +157,7 @@ int enqueue(struct node* new_node)
         _cur->next = new_node;
         set = 1;
     }
-    /*
-    switch(_scheduling_policy)
-    {
-        case FCFS: * 
-            _cur->next = new_node;
-            set =1;
-        break;
-        case SJF:
-            if(new_node->data->execution_time < _cur->data->execution_time)
-            {
-                new_node->next = _cur;
-                _head = new_node;
-                set = 1;
-            }
-        break;
-        case PRIORITY:
-            if(new_node->data->priority < _cur->data->priority)
-            {
-                new_node->next = _cur;
-                _head = new_node;
-                set = 1;
-            }
-        break;    
-    }
-    */
+    
     if(_cur->next == NULL && !set) //if next is NULL, then at the end of queue, therefore _cur set next to new_node.
     {
         _cur->next = new_node;
@@ -263,6 +211,7 @@ int find_total_waiting_time(struct node* new_node)
 */
 int submit_job(char* job_name, int job_execution_time, int job_priority)
 {
+    pthread_mutex_lock(&job_q_mu);
     if(_head == NULL)
     {
         _head = (struct node*)(malloc(sizeof(struct node)));
@@ -281,9 +230,7 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
     if(_head->data == NULL)
     {
         //TODO; this should be in insert node
-        pthread_mutex_lock(&job_q_mu);
         _head->data = new_job;
-        pthread_mutex_unlock(&job_q_mu);
         num_jobs++;
     }
     else //else create a new node
@@ -303,15 +250,16 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
         time_to_wait = find_total_waiting_time(new_node);
     }
     printf("Job %s was sumbitted.\nTotal number of jobs in the queue: %d\nExpected waiting time: %d seconds\nScheduling Policy: %s\n", job_name, num_jobs, time_to_wait, get_current_scheduling_policy());
+    pthread_mutex_unlock(&job_q_mu);    
     return 0;
 }
 
-struct job* remove_job()
+void remove_job()
 {
     struct node* old_head = dequeue();
-    struct job* old_job = old_head->data;
+    //struct job* old_job = old_head->data;
     //TODO; calculations to do on job finish.
-    return old_job;
+    free(old_head);
 }
 
 const char* progress_to_string(struct job* target)
@@ -349,7 +297,7 @@ void selection_sort(struct node** node_arr)
     {
         for(int j = i + 1; j < num_jobs; j++)
         {
-            if(get_job_data_from_node(node_arr[i]) > get_job_data_from_node(node_arr[j]))
+            if(get_job_data_from_node(node_arr[i]) > get_job_data_from_node(node_arr[j]) && node_arr[i]->data->progress != ISRUNNING)
             {
                 struct node* temp = node_arr[i];
                 node_arr[i] = node_arr[j];
@@ -374,56 +322,7 @@ void reorder_nodes()
         node_arr[i] = _cur;
         _cur = _cur->next;
     }
-    //selection_sort(node_arr);
-    //sort the array based on scheduling policy
-    switch(_scheduling_policy)
-    {
-        case FCFS:
-            // first come first serve based on arrival time, smallest arrival time first
-            for(int i = 0; i < num_jobs; i++)
-            {
-                for(int j = i+1; j < num_jobs; j++)
-                {
-                    if(node_arr[j]->data->arrival_time < node_arr[i]->data->arrival_time) 
-                    {
-                        struct node* temp = node_arr[i];
-                        node_arr[i] = node_arr[j];
-                        node_arr[j] = temp;
-                    }
-                }
-            }
-        break; 
-        case SJF:
-            //shortest job first, smallest execution time first
-            for(int i = 0; i < num_jobs; i++)
-            {
-                for(int j = i+1; j < num_jobs; j++)
-                {
-                    if(node_arr[j]->data->execution_time < node_arr[i]->data->execution_time)
-                    {
-                        struct node* temp = node_arr[i];
-                        node_arr[i] = node_arr[j];
-                        node_arr[j] = temp;
-                    }
-                }
-            }
-        break;
-        case PRIORITY:
-            //priority 
-            for(int i = 0; i < num_jobs; i++)
-            {
-                for(int j = i+1; j < num_jobs; j++)
-                {
-                    if(node_arr[j]->data->priority < node_arr[i]->data->priority)
-                    {
-                        struct node* temp = node_arr[i];
-                        node_arr[i] = node_arr[j];
-                        node_arr[j] = temp;
-                    }
-                }
-            }
-        break;
-    }
+    selection_sort(node_arr);
 
     _head = node_arr[0];
     _cur = _head;

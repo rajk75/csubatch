@@ -75,13 +75,16 @@ int get_input()
 int parse_command()
 {
     get_input();
-    if(strstr(_input_tokens[0], "quit"))
+    if(strcmp(_input_tokens[0], "\n")==0)
+    {
+        return DONOTHING;
+    }
+    else if(strstr(_input_tokens[0], "quit"))
     {
         return QUIT;
     }
     else if(strstr(_input_tokens[0], "help") && _input_tokens[2] == NULL) //strstr = if string contains substring "help"
     {
-        
         return HELP;
     }
     else if(strstr(_input_tokens[0], "run"))
@@ -90,28 +93,22 @@ int parse_command()
     }
     else if(strstr(_input_tokens[0], "list"))
     {
-        //list_jobs();
         return  LIST;
     }
     else if(strstr(_input_tokens[0], "fcfs"))
     {
-        //switch scheduling policy
-        //change_scheduling_policy(0);
         return CMD_FCFS;
     }
     else if(strstr(_input_tokens[0], "sjf") )
     {
-        //switch scheduling policy
         return CMD_SJF;
     }
     else if(strstr(_input_tokens[0], "priority"))
     {
-        //switch scheduling policy
         return CMD_PRIORITY;
     }
     else
     {
-        //invaild command message
         return CMD_INVAILD;
     }
 }

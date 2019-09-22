@@ -22,7 +22,7 @@ void* scheduling_loop(void* signal_jsub)
                     //TODO; signal dispatcher that a job is ready to be excev'd
                     if(signal_jsub != NULL)
                     {
-                        //do the signal
+                        //set the signal
                         *lsignal_jsub = READY;
                     }
                     pthread_mutex_unlock(&job_q_mu);

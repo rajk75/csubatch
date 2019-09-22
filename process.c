@@ -11,6 +11,7 @@
  *
  */
 #include <stdio.h> 
+#include <unistd.h>
 
 int main(int argc, char *argv[] )
 {
@@ -24,6 +25,7 @@ int main(int argc, char *argv[] )
     i++;
     argc--;
   }
-
+  sleep(10);
+  puts("done.");
   return 0;
 }
