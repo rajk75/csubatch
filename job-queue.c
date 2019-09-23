@@ -34,6 +34,7 @@ struct node* peek()
 */
 int deconstruct_queue()
 {
+    pthread_mutex_destroy(&job_q_mu);
     if(_head == NULL)
     {
         return 1;
@@ -117,7 +118,7 @@ void move_pointer(struct node* new_node)
         exit(1);
     }
     _cur = _head;
-    if(_scheduling_policy != FCFS) //dangerous, assums vaild scheduling policy number.
+    if(_scheduling_policy != FCFS) //dangerous, assumes vaild scheduling policy number.
     {
         while(_cur->next != NULL && get_job_data_from_node(_cur->next) < get_job_data_from_node(new_node))
         {
@@ -239,10 +240,10 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
         new_node->data = new_job;
         new_node->next = NULL;
         move_pointer(new_node);
-        pthread_mutex_lock(&job_q_mu);
+        //pthread_mutex_lock(&job_q_mu);
         enqueue(new_node);
-        //TODO; notify job entry
-        pthread_mutex_unlock(&job_q_mu);
+        //TODO; notify time of job entry
+        //pthread_mutex_unlock(&job_q_mu);
     }
     int time_to_wait = 0;
     if(num_jobs > 1 && new_node != NULL)
@@ -258,7 +259,7 @@ void remove_job()
 {
     struct node* old_head = dequeue();
     //struct job* old_job = old_head->data;
-    //TODO; calculations to do on job finish.
+    //TODO; calculations to do on job finish. call function from benchmark
     free(old_head);
 }
 

@@ -28,6 +28,7 @@ void* dispatching_loop()
     pid_t pid;
     while(get_program_state() == RUNNING)
     {
+        //use pthread_cond to suspend the thread.
         if(scheduling_sig == READY)
         {
             //printf("[DISPATCHING TRHEAD] DEBUG: ready to excev\n");
@@ -47,6 +48,7 @@ void* dispatching_loop()
                     //pid is child process
                     //execv replaces the process returned by the fork, therefore no extra precuations need to be taken
                     //get head process name
+                    
                     execv("process", my_args);
                     perror("dispatching loop: execv failed.");
                     exit(EXIT_FAILURE);

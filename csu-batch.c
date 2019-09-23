@@ -71,6 +71,7 @@ void call_help_module()
 
 int main()
 {
+    pthread_mutex_init(&pipe_mu, NULL);
     pthread_t scheduling_t;
     pthread_t dispatching_t;
     _init_job_queue();
@@ -94,7 +95,9 @@ int main()
             return 1;
         }
        //if child process, use set command instead and use data from jobs array in benchmark
+        pthread_mutex_lock(&pipe_mu);
         _command  = parse_command();
+        pthread_mutex_unlock(&pipe_mu);
         
         switch(_command)
         {
@@ -138,4 +141,5 @@ int main()
     //TODO; join benchmark thread to main, printing statistics
     printf("DEBUG: message to display when exiting csubatch\n");
     deconstruct_queue();
+    pthread_mutex_destroy(&pipe_mu);
 }
