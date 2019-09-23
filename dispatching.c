@@ -28,6 +28,7 @@ void* dispatching_loop()
     pid_t pid;
     while(get_program_state() == RUNNING)
     {
+        //use pthread_cond to suspend the thread.
         if(scheduling_sig == READY)
         {
             //printf("[DISPATCHING TRHEAD] DEBUG: ready to excev\n");
