@@ -16,7 +16,7 @@ Purpose: Main for csu batch
 #include "scheduling.h"
 #include "dispatching.h"
 
-enum program_state _state = RUNNING; //should only be read from
+enum program_state _state = RUNNING; //should only be read from other sources
 enum command_flag _command = DEFAULT;
 
 /*
@@ -103,7 +103,7 @@ int main()
                 printf("COMMAND ERROR.\n");
             break;
             case HELP:
-                //printf("help module in devleopment\n");
+                printf("help module in devleopment\n");
                 //todo: interface with help module here.
                 call_help_module();
             break;

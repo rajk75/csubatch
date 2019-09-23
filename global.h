@@ -42,4 +42,9 @@ enum signal
     READY = 40,
     NOTREADY = 41
 };
+enum console_state
+{
+    PRINTREADY = 50,
+    PRINTNOTREADY = 51
+};
 #endif
