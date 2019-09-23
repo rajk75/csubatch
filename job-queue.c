@@ -239,10 +239,10 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
         new_node->data = new_job;
         new_node->next = NULL;
         move_pointer(new_node);
-        pthread_mutex_lock(&job_q_mu);
+        //pthread_mutex_lock(&job_q_mu);
         enqueue(new_node);
-        //TODO; notify job entry
-        pthread_mutex_unlock(&job_q_mu);
+        //TODO; notify time of job entry
+        //pthread_mutex_unlock(&job_q_mu);
     }
     int time_to_wait = 0;
     if(num_jobs > 1 && new_node != NULL)
@@ -250,7 +250,7 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
         time_to_wait = find_total_waiting_time(new_node);
     }
     printf("Job %s was sumbitted.\nTotal number of jobs in the queue: %d\nExpected waiting time: %d seconds\nScheduling Policy: %s\n", job_name, num_jobs, time_to_wait, get_current_scheduling_policy());
-    //pthread_mutex_unlock(&job_q_mu);    
+    pthread_mutex_unlock(&job_q_mu);    
     return 0;
 }
 

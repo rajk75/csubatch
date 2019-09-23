@@ -1,5 +1,6 @@
 #include "benchmark.h"
 #include "global.h"
+#include "job-queue.h"
 #include <pthread.h>
 #include <time.h>
 
@@ -58,7 +59,7 @@ void start_test(char* benchmark_name, enum scheduling_policy policy, int num_of_
 
 
 // remove after devleopment, this main is for testing.
-int main()
+/*int main()
 {
     start_test("examplebenchmakr", FCFS, 4);
-}
+}*/
