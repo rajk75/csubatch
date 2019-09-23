@@ -48,6 +48,7 @@ void* dispatching_loop()
                     //pid is child process
                     //execv replaces the process returned by the fork, therefore no extra precuations need to be taken
                     //get head process name
+                    
                     execv("process", my_args);
                     perror("dispatching loop: execv failed.");
                     exit(EXIT_FAILURE);

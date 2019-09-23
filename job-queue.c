@@ -34,6 +34,7 @@ struct node* peek()
 */
 int deconstruct_queue()
 {
+    pthread_mutex_destroy(&job_q_mu);
     if(_head == NULL)
     {
         return 1;
