@@ -7,4 +7,5 @@
 
 enum program_state get_program_state();
 pthread_mutex_t pipe_mu;
+pthread_cond_t queue_empty;
 #endif

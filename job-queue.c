@@ -4,6 +4,7 @@
 //inlcude header files
 #include "job-queue.h"
 #include "global.h"
+#include "csu-batch.h"
 
 //initializing
 enum scheduling_policy _scheduling_policy = FCFS;
@@ -117,6 +118,7 @@ void move_pointer(struct node* new_node)
         printf("null job data error! exiting...");
         exit(1);
     }
+
     _cur = _head;
     if(_scheduling_policy != FCFS) //dangerous, assumes vaild scheduling policy number.
     {
@@ -215,6 +217,7 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
     pthread_mutex_lock(&job_q_mu);
     if(_head == NULL)
     {
+        pthread_cond_signal(&queue_empty);
         _head = (struct node*)(malloc(sizeof(struct node)));
         _head->data = NULL;
         _head->next = NULL;

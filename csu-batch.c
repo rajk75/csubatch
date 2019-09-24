@@ -19,6 +19,8 @@ Purpose: Main for csu batch
 enum program_state _state = RUNNING; //should only be read from other sources
 enum command_flag _command = DEFAULT;
 
+queue_empty = PTHREAD_COND_INITIALIZER;
+
 /*
 * this function return the state of the main process
 * @param
@@ -138,8 +140,9 @@ int main()
         }
     }
     //functions to be called before exiting program.
+    //wait for job queue to be empty
     //TODO; join benchmark thread to main, printing statistics
     printf("DEBUG: message to display when exiting csubatch\n");
-    deconstruct_queue();
+    //deconstruct_queue();
     pthread_mutex_destroy(&pipe_mu);
 }
