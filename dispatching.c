@@ -26,7 +26,7 @@ void prototype_dispatching()
 void* dispatching_loop()
 {
     pid_t pid;
-    while(get_program_state() == RUNNING)
+    while(get_program_state() == RUNNING || peek() != NULL)
     {
         //use pthread_cond to suspend the thread.
         if(scheduling_sig == READY)
@@ -48,12 +48,12 @@ void* dispatching_loop()
                     //pid is child process
                     //execv replaces the process returned by the fork, therefore no extra precuations need to be taken
                     //get head process name
-                    
                     execv("process", my_args);
                     perror("dispatching loop: execv failed.");
                     exit(EXIT_FAILURE);
                 break;
                 default:
+                    //wait for process to finish.
                     while(waitpid(pid, &status, WNOHANG) == 0);
                     //after execution dequeue the job and notify that a job has completed
                     remove_job();

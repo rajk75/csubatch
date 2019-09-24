@@ -6,9 +6,8 @@ Purpose: Main for csu batch
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-//header
+//headers
 #include "csu-batch.h"
-//other c files
 #include "command-parser.h"
 #include "job-queue.h"
 #include "global.h"
@@ -19,7 +18,12 @@ Purpose: Main for csu batch
 enum program_state _state = RUNNING; //should only be read from other sources
 enum command_flag _command = DEFAULT;
 
-queue_empty = PTHREAD_COND_INITIALIZER;
+pthread_cond_t queue_empty = PTHREAD_COND_INITIALIZER;
+
+pthread_cond_t* get_pthread_cond_t_queue_empty()
+{
+    return &queue_empty;
+}
 
 /*
 * this function return the state of the main process
@@ -74,6 +78,7 @@ void call_help_module()
 int main()
 {
     pthread_mutex_init(&pipe_mu, NULL);
+    pthread_mutex_init(&queue_t, NULL);
     pthread_t scheduling_t;
     pthread_t dispatching_t;
     _init_job_queue();
@@ -142,7 +147,12 @@ int main()
     //functions to be called before exiting program.
     //wait for job queue to be empty
     //TODO; join benchmark thread to main, printing statistics
+    //puts("attempting to quit");
+    pthread_join(scheduling_t, NULL);
+    pthread_join(dispatching_t, NULL);
     printf("DEBUG: message to display when exiting csubatch\n");
-    //deconstruct_queue();
+    deconstruct_queue();
     pthread_mutex_destroy(&pipe_mu);
+    pthread_mutex_destroy(&queue_t);
+    return 0;
 }

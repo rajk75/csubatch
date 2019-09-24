@@ -18,6 +18,10 @@ struct node
     struct node* next;
 };
 
+pthread_mutex_t queue_mu;
+
+pthread_cond_t queue_empty;
+
 pthread_mutex_t job_q_mu;
 
 void _init_job_queue();
