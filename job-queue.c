@@ -4,6 +4,7 @@
 //inlcude header files
 #include "job-queue.h"
 #include "global.h"
+#include "csu-batch.h"
 
 //initializing
 enum scheduling_policy _scheduling_policy = FCFS;
@@ -34,6 +35,7 @@ struct node* peek()
 */
 int deconstruct_queue()
 {
+    pthread_mutex_destroy(&job_q_mu);
     if(_head == NULL)
     {
         return 1;
@@ -107,8 +109,7 @@ void move_pointer(struct node* new_node)
     //TODO set error start and let csubatch handle errors
     if(_head == NULL)
     {
-        printf("job queue unpopulated error! exiting...");
-        exit(1);
+        return;
     }
     //start pointer at front  of queue.
     if(_head->data == NULL)
@@ -142,8 +143,9 @@ int enqueue(struct node* new_node)
 {
     if(_head == NULL || _cur == NULL)
     {
-        //should be unreachable
-        return 1;
+        _head = new_node;
+        num_jobs++;
+        return 0;
     }
     int set = 0;
     if(_scheduling_policy != FCFS && get_job_data_from_node(new_node) < get_job_data_from_node(_cur))
@@ -212,12 +214,12 @@ int find_total_waiting_time(struct node* new_node)
 int submit_job(char* job_name, int job_execution_time, int job_priority)
 {
     pthread_mutex_lock(&job_q_mu);
-    if(_head == NULL)
-    {
-        _head = (struct node*)(malloc(sizeof(struct node)));
-        _head->data = NULL;
-        _head->next = NULL;
-    }
+    // if(_head == NULL)
+    // {
+    //     _head = (struct node*)(malloc(sizeof(struct node)));
+    //     _head->data = NULL;
+    //     _head->next = NULL;
+    // }
     //create a new job
     struct job* new_job = (struct job*)(malloc(sizeof(struct job)));
     new_job->name = job_name;
@@ -227,30 +229,28 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
     new_job->progress = ISNOTRUNNING;
     //if head data is null asign new job to head->data
     struct node* new_node = NULL;
-    if(_head->data == NULL)
-    {
-        //TODO; this should be in insert node
-        _head->data = new_job;
-        num_jobs++;
-    }
-    else //else create a new node
-    {   
-        new_node = (struct node*)(malloc(sizeof(struct node)));
-        new_node->data = new_job;
-        new_node->next = NULL;
-        move_pointer(new_node);
-        pthread_mutex_lock(&job_q_mu);
-        enqueue(new_node);
-        //TODO; notify job entry
-        pthread_mutex_unlock(&job_q_mu);
-    }
+    // if(_head->data == NULL)
+    // {
+    //     //TODO; this should be in insert node
+    //     _head->data = new_job;
+    //     num_jobs++;
+    // }
+    new_node = (struct node*)(malloc(sizeof(struct node)));
+    new_node->data = new_job;
+    new_node->next = NULL;
+    move_pointer(new_node);
+    //pthread_mutex_lock(&job_q_mu);
+    enqueue(new_node);
+    //TODO; notify time of job entry
+    //pthread_mutex_unlock(&job_q_mu);
+
     int time_to_wait = 0;
     if(num_jobs > 1 && new_node != NULL)
     {
         time_to_wait = find_total_waiting_time(new_node);
     }
     printf("Job %s was sumbitted.\nTotal number of jobs in the queue: %d\nExpected waiting time: %d seconds\nScheduling Policy: %s\n", job_name, num_jobs, time_to_wait, get_current_scheduling_policy());
-    //pthread_mutex_unlock(&job_q_mu);    
+    pthread_mutex_unlock(&job_q_mu);    
     return 0;
 }
 

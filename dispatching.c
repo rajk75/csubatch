@@ -26,7 +26,7 @@ void prototype_dispatching()
 void* dispatching_loop()
 {
     pid_t pid;
-    while(get_program_state() == RUNNING)
+    while(get_program_state() == RUNNING || peek() != NULL)
     {
         //use pthread_cond to suspend the thread.
         if(scheduling_sig == READY)
@@ -53,6 +53,7 @@ void* dispatching_loop()
                     exit(EXIT_FAILURE);
                 break;
                 default:
+                    //wait for process to finish.
                     while(waitpid(pid, &status, WNOHANG) == 0);
                     //after execution dequeue the job and notify that a job has completed
                     remove_job();

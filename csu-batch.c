@@ -6,9 +6,8 @@ Purpose: Main for csu batch
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-//header
+//headers
 #include "csu-batch.h"
-//other c files
 #include "command-parser.h"
 #include "job-queue.h"
 #include "global.h"
@@ -16,8 +15,15 @@ Purpose: Main for csu batch
 #include "scheduling.h"
 #include "dispatching.h"
 
-enum program_state _state = RUNNING; //should only be read from
+enum program_state _state = RUNNING; //should only be read from other sources
 enum command_flag _command = DEFAULT;
+
+pthread_cond_t queue_empty = PTHREAD_COND_INITIALIZER;
+
+pthread_cond_t* get_pthread_cond_t_queue_empty()
+{
+    return &queue_empty;
+}
 
 /*
 * this function return the state of the main process
@@ -37,7 +43,7 @@ enum program_state get_program_state()
 void call_create_job()
 {
     char* job_name = malloc(sizeof(char) * FLAG_INPUT_BUFFER);
-    strcpy(job_name, "sample_job");
+    strcpy(job_name, "process");
     int job_execution_time = 10;
     int job_priority = 1;
     if(get_token(1) != NULL)
@@ -71,6 +77,8 @@ void call_help_module()
 
 int main()
 {
+    pthread_mutex_init(&pipe_mu, NULL);
+    pthread_mutex_init(&queue_t, NULL);
     pthread_t scheduling_t;
     pthread_t dispatching_t;
     _init_job_queue();
@@ -94,7 +102,9 @@ int main()
             return 1;
         }
        //if child process, use set command instead and use data from jobs array in benchmark
+        pthread_mutex_lock(&pipe_mu);
         _command  = parse_command();
+        pthread_mutex_unlock(&pipe_mu);
         
         switch(_command)
         {
@@ -103,7 +113,7 @@ int main()
                 printf("COMMAND ERROR.\n");
             break;
             case HELP:
-                //printf("help module in devleopment\n");
+                printf("help module in devleopment\n");
                 //todo: interface with help module here.
                 call_help_module();
             break;
@@ -135,7 +145,14 @@ int main()
         }
     }
     //functions to be called before exiting program.
+    //wait for job queue to be empty
     //TODO; join benchmark thread to main, printing statistics
+    //puts("attempting to quit");
+    pthread_join(scheduling_t, NULL);
+    pthread_join(dispatching_t, NULL);
     printf("DEBUG: message to display when exiting csubatch\n");
     deconstruct_queue();
+    pthread_mutex_destroy(&pipe_mu);
+    pthread_mutex_destroy(&queue_t);
+    return 0;
 }

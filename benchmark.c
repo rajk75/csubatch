@@ -1,5 +1,6 @@
 #include "benchmark.h"
 #include "global.h"
+#include "job-queue.h"
 #include <pthread.h>
 #include <time.h>
 
@@ -7,7 +8,7 @@
 //Number of completed jobs
 int num_jc = 0;
 //Sum of time between job entry and time completion
-int sum_job_entry_comletion = 0;
+int sum_job_entry_completion = 0;
 //Sum of time between job entry time and in-progress time
 int sum_job_entry_inprogress = 0;
 //Sum of time from job in-progress to job completion
@@ -47,18 +48,23 @@ void clock_job_completion()
 
 void start_test(char* benchmark_name, enum scheduling_policy policy, int num_of_jobs)
 {
+    int sum_benchmark_entry_completion;
     //make sure job queue is empty, wait for queue to be empty using pthread_cond()
     //open benchmark_name file, 
     //stream in contents, creating a node and job for each
     //loop for num of jobs specified for the user creating a node for each
     //while queue not empty, continue to submit jobs 
     //calling other modules. mostly just submit_job();
+    
+    //before printing, sub global vars from local
+    //calculate averages
+    //print
 }
 
 
 
 // remove after devleopment, this main is for testing.
-int main()
+/*int main()
 {
     start_test("examplebenchmakr", FCFS, 4);
-}
+}*/

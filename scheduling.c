@@ -4,12 +4,20 @@
 #include "job-queue.h"
 #include "global.h"
 
+
+void schedule_next_job()
+{
+
+}
+
 void* scheduling_loop(void* signal_jsub)
 {
-    while(get_program_state() == RUNNING)
+    pthread_mutex_lock(&queue_t);
+    while(get_program_state() == RUNNING || peek()!= NULL)
     {
         enum signal* lsignal_jsub = (enum signal*)(signal_jsub);
         struct node* head = peek();
+       
         if(head != NULL)
         {
             if(head->data != NULL)
@@ -28,7 +36,7 @@ void* scheduling_loop(void* signal_jsub)
                     pthread_mutex_unlock(&job_q_mu);
                 }
             }
-        }        
+        }     
     }
     return NULL;
 }
