@@ -43,7 +43,7 @@ enum program_state get_program_state()
 void call_create_job()
 {
     char* job_name = malloc(sizeof(char) * FLAG_INPUT_BUFFER);
-    strcpy(job_name, "sample_job");
+    strcpy(job_name, "process");
     int job_execution_time = 10;
     int job_priority = 1;
     if(get_token(1) != NULL)
