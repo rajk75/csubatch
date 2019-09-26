@@ -4,39 +4,34 @@
 #include "job-queue.h"
 #include "global.h"
 
-
-void schedule_next_job()
-{
-
-}
-
 void* scheduling_loop(void* signal_jsub)
 {
-    pthread_mutex_lock(&queue_t);
+    
+    //pthread_mutex_lock(&queue_t);
     while(get_program_state() == RUNNING || peek()!= NULL)
     {
+        //pthread_mutex_lock(&queue_state_t);
+        pthread_cond_wait(&queue_not_empty_cond_t, &queue_state_t);
         enum signal* lsignal_jsub = (enum signal*)(signal_jsub);
-        struct node* head = peek();
-       
+        struct node* head = peek();    
         if(head != NULL)
         {
             if(head->data != NULL)
             {
                 if(head->data->progress == ISNOTRUNNING)
                 {
-                    //set job to running
                     pthread_mutex_lock(&job_q_mu);
                     head->data->progress = ISRUNNING;
-                    //TODO; signal dispatcher that a job is ready to be excev'd
                     if(signal_jsub != NULL)
                     {
-                        //set the signal
                         *lsignal_jsub = READY;
                     }
                     pthread_mutex_unlock(&job_q_mu);
                 }
             }
-        }     
+        }  
+        pthread_cond_signal(&queue_not_empty_cond_t);
+        pthread_mutex_unlock(&queue_state_t);   
     }
     return NULL;
 }
