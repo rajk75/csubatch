@@ -20,12 +20,38 @@ enum command_flag
     CMD_PRIORITY = 17,
     TEST = 18,
     QUIT = 19,
-    DEFAULT = 101
+    DEFAULT = 101,
+    DONOTHING = 111
 };
+
 enum scheduling_policy
 {
     FCFS = 20,
     SJF = 21,
     PRIORITY = 22
+};
+
+enum job_state
+{
+    ISRUNNING = 30,
+    ISNOTRUNNING = 31
+};
+
+enum signal
+{
+    READY = 40,
+    NOTREADY = 41
+};
+
+enum console_state
+{
+    PRINTREADY = 50,
+    PRINTNOTREADY = 51
+};
+
+enum dispatching_state
+{
+    DEFAULT_MODE = 60,
+    MCRO_BENCHMARK_MODE = 61
 };
 #endif
