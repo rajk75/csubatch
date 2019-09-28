@@ -69,17 +69,16 @@ void call_help_module()
     help(get_token(1));
 }
 
-int main()
+int main(int argc, char** argv)
 {
     pthread_cond_init(&queue_not_empty_cond_t, NULL);
     pthread_mutex_init(&pipe_mu, NULL);
     pthread_mutex_init(&queue_t, NULL);
     pthread_mutex_init(&queue_state_t, NULL);
+    _init_job_queue();
     pthread_t scheduling_t;
     pthread_t dispatching_t;
-    _init_job_queue();
-    //if(pthread_create(&scheduling_t, NULL, &scheduling_loop, &scheduling_sig))
-    if(pthread_create(&scheduling_t, NULL, &scheduling_loop, get_scheduling_sig())) //use this if statement when dispatching module is setup
+    if(pthread_create(&scheduling_t, NULL, &scheduling_loop, get_scheduling_sig()))
     {
         fprintf(stderr, "Error creating scheduling thread.");
         return 1;
@@ -89,72 +88,90 @@ int main()
         fprintf(stderr, "Error creating dispatching thread");
         return 1;
     }
-    printf("Weclome to %s's batch job scheduler Version %s\nType 'help' to find out more about CSUbatch commands.\n", PROGRAM_AUTHOR, VERSION_NUM);
-    while(_state != EXIT)
+    if(argc == 1)
     {
-        if(_state == ERROR)
+        while(_state != EXIT)
         {
-            fprintf(stderr,"program in erroneous state, exiting...");
-            return 1;
-        }
-       //if child process, use set command instead and use data pthread_mutex_lock(&job_q_mu);m jobs array in benchmark
-        pthread_mutex_lock(&pipe_mu);
-        _command  = parse_command();
-        pthread_mutex_unlock(&pipe_mu); 
-        switch(_command)
-        {
-            case DONOTHING: break;
-            case CMD_ERROR:
-                printf("COMMAND ERROR.\n");
-            break;
-            case HELP:
-                printf("help module in devleopment\n");
-                //todo: interface with help module here.
-                call_help_module();
-            break;
-            case RUN:
-                if(access(get_token(1),F_OK) != -1)
-                {
-                    pthread_mutex_lock(&job_q_mu);
-                    call_create_job();    
-                    pthread_mutex_unlock(&job_q_mu);                
-                }
-                else
-                {
-                    printf("Process with name '%s' does not exist, please try again.\n", get_token(1));
-                }
-            break;
-            case LIST:
-                list_jobs();
-            break;
-            case CMD_FCFS:
-                change_scheduling_policy(FCFS);
-            break;
-            case CMD_SJF:
-                change_scheduling_policy(SJF);
-            break;
-            case CMD_PRIORITY:
-                change_scheduling_policy(PRIORITY);
-            break;
-            case TEST:
-                
-                start_test("examplebenchmakr", FCFS, 4);
-                
-            break;
-            case QUIT:
-                
-                _state = EXIT;
-            break;
-            default:
-                printf("ERROR: invalid command. (%s)\n", get_token(0));
-            break;
+            if(_state == ERROR)
+            {
+                fprintf(stderr,"program in erroneous state, exiting...");
+                return 1;
+            }
+            //if child process, use set command instead and use data pthread_mutex_lock(&job_q_mu);m jobs array in benchmark
+            pthread_mutex_lock(&pipe_mu);
+            _command  = parse_command();
+            pthread_mutex_unlock(&pipe_mu); 
+            switch(_command)
+            {
+                case DONOTHING: break;
+                case CMD_ERROR:
+                    printf("COMMAND ERROR.\n");
+                break;
+                case HELP:
+                    printf("help module in devleopment\n");
+                    //todo: interface with help module here.
+                    call_help_module();
+                break;
+                case RUN:
+                    if(access(get_token(1),F_OK) != -1)
+                    {
+                        //pthread_mutex_lock(&job_q_mu);
+                        call_create_job();    
+                        //pthread_mutex_unlock(&job_q_mu);                
+                    }
+                    else
+                    {
+                        printf("Process with name '%s' does not exist, please try again.\n", get_token(1));
+                    }
+                break;
+                case LIST:
+                    list_jobs();
+                break;
+                case CMD_FCFS:
+                    change_scheduling_policy(FCFS);
+                break;
+                case CMD_SJF:
+                    change_scheduling_policy(SJF);
+                break;
+                case CMD_PRIORITY:
+                    change_scheduling_policy(PRIORITY);
+                break;
+                case TEST:
+                    printf("Benchmark module in development");
+                    //call function that forks the process
+                break;
+                case QUIT:
+                    _state = EXIT;
+                break;
+                default:
+                    printf("ERROR: invalid command. (%s)\n", get_token(0));
+                break;
+            }
         }
     }
+    else
+    {
+        set_dispatching_state(MCRO_BENCHMARK_MODE);
+        char* job_name = malloc(sizeof(char)*20);
+        strcpy(job_name, "micro_benchmark");
+        int exeuction_time = atoi(argv[1]);
+        int priority = 1;
+        submit_job(job_name,exeuction_time,priority);
+        _state = EXIT;
+    }
     pthread_cond_signal(&queue_not_empty_cond_t);
+    pthread_mutex_unlock(&queue_state_t);
     pthread_join(dispatching_t, NULL);
     pthread_join(scheduling_t, NULL);
-    //TODO; join benchmark thread to main, printing statistics
-    printf("DEBUG: message to display when exiting csubatch\n");
+    //TODO; print statistics
+    if(get_dispatching_state == DEFAULT_MODE)
+    {
+        printf("DEBUG: message to display when exiting csubatch\n");
+    }
+    else
+    {
+        //output stats to a file.
+    }
     deconstruct_queue();
     pthread_mutex_destroy(&pipe_mu);
     pthread_mutex_destroy(&queue_t);

@@ -42,9 +42,16 @@ enum signal
     READY = 40,
     NOTREADY = 41
 };
+
 enum console_state
 {
     PRINTREADY = 50,
     PRINTNOTREADY = 51
+};
+
+enum dispatching_state
+{
+    DEFAULT_MODE = 60,
+    MCRO_BENCHMARK_MODE = 61
 };
 #endif

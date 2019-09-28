@@ -5,6 +5,7 @@
 //inlcude header files
 #include "job-queue.h"
 #include "global.h"
+#include "dispatching.h"
 #include "csu-batch.h"
 
 //initializing
@@ -20,6 +21,7 @@ struct node* _cur = NULL;
 void _init_job_queue()
 {
     pthread_mutex_init(&job_q_mu, NULL);
+    pthread_mutex_lock(&queue_state_t);
 }
 
 /**
@@ -107,12 +109,12 @@ int get_job_data_from_node(struct node* target)
 */
 void move_pointer(struct node* new_node)
 {
-    //TODO set error start and let csubatch handle errors
+    //TODO set error state and let csubatch handle errors
     if(_head == NULL)
     {
         return;
     }
-    //start pointer at front  of queue.
+    //start pointer at front of queue.
     if(_head->data == NULL)
     {
         printf("null job data error! exiting...");
@@ -224,16 +226,27 @@ int submit_job(char* job_name, int job_execution_time, int job_priority)
     new_node->data = new_job;
     new_node->next = NULL;
     move_pointer(new_node);
+    pthread_mutex_lock(&job_q_mu);
+    //if(get_dispatching_state() == MCRO_BENCHMARK_MODE) puts("obtained lock for job queue");
     enqueue(new_node);
-    pthread_cond_signal(&queue_not_empty_cond_t);
-    pthread_mutex_unlock(&queue_state_t);
+    pthread_mutex_unlock(&job_q_mu);
+    if(num_jobs == 1)
+    {
+        //if(get_dispatching_state() == MCRO_BENCHMARK_MODE) puts("obtained cond lock for job queue state");
+        pthread_cond_signal(&queue_not_empty_cond_t);
+        pthread_mutex_unlock(&queue_state_t);
+        //if(get_dispatching_state() == MCRO_BENCHMARK_MODE) puts("unlock queue state lock");
+    }
     //TODO; notify time of job entry
     int time_to_wait = 0;
     if(num_jobs > 1 && new_node != NULL)
     {
         time_to_wait = find_total_waiting_time(new_node);
     }
-    printf("Job %s was sumbitted.\nTotal number of jobs in the queue: %d\nExpected waiting time: %d seconds\nScheduling Policy: %s\n", job_name, num_jobs, time_to_wait, get_current_scheduling_policy());
+    if(get_dispatching_state() == DEFAULT_MODE)
+    {
+        printf("Job %s was sumbitted.\nTotal number of jobs in the queue: %d\nExpected waiting time: %d seconds\nScheduling Policy: %s\n", job_name, num_jobs, time_to_wait, get_current_scheduling_policy());
+    }
     return 0;
 }
 
@@ -242,6 +255,10 @@ void remove_job()
     struct node* old_head = dequeue();
     //TODO; calculations to do on job finish. call function from benchmark
     free(old_head);
+    if(num_jobs == 0)
+    {
+        //pthread_mutex_trylock(&queue_state_t);
+    }
 }
 
 const char* progress_to_string(struct job* target)
