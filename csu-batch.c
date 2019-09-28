@@ -15,6 +15,7 @@ Purpose: Main for csu batch
 #include "help2.h"
 #include "scheduling.h"
 #include "dispatching.h"
+#include "benchmark.h"
 
 enum program_state _state = RUNNING; //should only be read from other sources
 enum command_flag _command = DEFAULT;

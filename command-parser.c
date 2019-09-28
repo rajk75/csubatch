@@ -83,6 +83,10 @@ int parse_command()
     {
         return QUIT;
     }
+    else if(strstr(_input_tokens[0], "test"))
+    {
+        return TEST;
+    }
     else if(strstr(_input_tokens[0], "help") && _input_tokens[2] == NULL) //strstr = if string contains substring "help"
     {
         return HELP;

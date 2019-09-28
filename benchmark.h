@@ -23,4 +23,11 @@ void clock_job_inprogress();
 
 void clock_job_completion();
 
+char * output_stats();
+
+void clock_program_start();
+
+void clock_program_end();
+
+
 #endif
