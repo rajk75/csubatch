@@ -75,7 +75,7 @@ void call_help_module()
     help(get_token(1));
 }
 
-int main()
+int main(int argc, char** argv)
 {
     pthread_mutex_init(&pipe_mu, NULL);
     pthread_mutex_init(&queue_t, NULL);
@@ -93,55 +93,63 @@ int main()
         fprintf(stderr, "Error creating dispatching thread");
         return 1;
     }
-    printf("Weclome to %s's batch job scheduler Version %s\nType 'help' to find out more about CSUbatch commands.\n", PROGRAM_AUTHOR, VERSION_NUM);
-    while(_state != EXIT)
+    if(argc > 0)
     {
-        if(_state == ERROR)
-        {
-            fprintf(stderr,"program in erroneous state, exiting...");
-            return 1;
-        }
-       //if child process, use set command instead and use data from jobs array in benchmark
-        pthread_mutex_lock(&pipe_mu);
-        _command  = parse_command();
-        pthread_mutex_unlock(&pipe_mu);
+        //launch into batch mode, anyoutput should be done in the form of output to a file
         
-        switch(_command)
+    }
+    else
+    {
+        printf("Weclome to %s's batch job scheduler Version %s\nType 'help' to find out more about CSUbatch commands.\n", PROGRAM_AUTHOR, VERSION_NUM);
+        while(_state != EXIT)
         {
-            case DONOTHING: break;
-            case CMD_ERROR:
-                printf("COMMAND ERROR.\n");
-            break;
-            case HELP:
-                printf("help module in devleopment\n");
-                //todo: interface with help module here.
-                call_help_module();
-            break;
-            case RUN:
-                call_create_job();
-            break;
-            case LIST:
-                list_jobs();
-            break;
-            case CMD_FCFS:
-                change_scheduling_policy(FCFS);
-            break;
-            case CMD_SJF:
-                change_scheduling_policy(SJF);
-            break;
-            case CMD_PRIORITY:
-                change_scheduling_policy(PRIORITY);
-            break;
-            case TEST:
-                printf("Benchmark module in development");
-                //call function that forks the process
-            break;
-            case QUIT:
-                _state = EXIT;
-            break;
-            default:
-                printf("ERROR: invalid command.\n");
-            break;
+            if(_state == ERROR)
+            {
+                fprintf(stderr,"program in erroneous state, exiting...");
+                return 1;
+            }
+        //if child process, use set command instead and use data from jobs array in benchmark
+            pthread_mutex_lock(&pipe_mu);
+            _command  = parse_command();
+            pthread_mutex_unlock(&pipe_mu);
+            
+            switch(_command)
+            {
+                case DONOTHING: break;
+                case CMD_ERROR:
+                    printf("COMMAND ERROR.\n");
+                break;
+                case HELP:
+                    printf("help module in devleopment\n");
+                    //todo: interface with help module here.
+                    call_help_module();
+                break;
+                case RUN:
+                    call_create_job();
+                break;
+                case LIST:
+                    list_jobs();
+                break;
+                case CMD_FCFS:
+                    change_scheduling_policy(FCFS);
+                break;
+                case CMD_SJF:
+                    change_scheduling_policy(SJF);
+                break;
+                case CMD_PRIORITY:
+                    change_scheduling_policy(PRIORITY);
+                break;
+                case TEST:
+                    printf("Benchmark module in development");
+                    //call function that forks the process
+                break;
+                case QUIT:
+                    _state = EXIT;
+                break;
+                default:
+                    printf("ERROR: invalid command.\n");
+                break;
+            }
         }
     }
     //functions to be called before exiting program.
@@ -151,6 +159,7 @@ int main()
     pthread_join(scheduling_t, NULL);
     pthread_join(dispatching_t, NULL);
     printf("DEBUG: message to display when exiting csubatch\n");
+    //outputstats
     deconstruct_queue();
     pthread_mutex_destroy(&pipe_mu);
     pthread_mutex_destroy(&queue_t);
