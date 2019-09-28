@@ -1,6 +1,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h>
 //inlcude header files
 #include "job-queue.h"
 #include "global.h"
@@ -184,7 +185,6 @@ struct node* dequeue()
     {
         _head = _head->next;
     }
-    old_head->next = NULL;
     num_jobs--;
     return old_head;
 }
@@ -213,51 +213,33 @@ int find_total_waiting_time(struct node* new_node)
 */
 int submit_job(char* job_name, int job_execution_time, int job_priority)
 {
-    pthread_mutex_lock(&job_q_mu);
-    // if(_head == NULL)
-    // {
-    //     _head = (struct node*)(malloc(sizeof(struct node)));
-    //     _head->data = NULL;
-    //     _head->next = NULL;
-    // }
-    //create a new job
     struct job* new_job = (struct job*)(malloc(sizeof(struct job)));
     new_job->name = job_name;
     new_job->execution_time = job_execution_time;
     new_job->priority = job_priority;
     time(&(new_job->arrival_time));
     new_job->progress = ISNOTRUNNING;
-    //if head data is null asign new job to head->data
     struct node* new_node = NULL;
-    // if(_head->data == NULL)
-    // {
-    //     //TODO; this should be in insert node
-    //     _head->data = new_job;
-    //     num_jobs++;
-    // }
     new_node = (struct node*)(malloc(sizeof(struct node)));
     new_node->data = new_job;
     new_node->next = NULL;
     move_pointer(new_node);
-    //pthread_mutex_lock(&job_q_mu);
     enqueue(new_node);
+    pthread_cond_signal(&queue_not_empty_cond_t);
+    pthread_mutex_unlock(&queue_state_t);
     //TODO; notify time of job entry
-    //pthread_mutex_unlock(&job_q_mu);
-
     int time_to_wait = 0;
     if(num_jobs > 1 && new_node != NULL)
     {
         time_to_wait = find_total_waiting_time(new_node);
     }
     printf("Job %s was sumbitted.\nTotal number of jobs in the queue: %d\nExpected waiting time: %d seconds\nScheduling Policy: %s\n", job_name, num_jobs, time_to_wait, get_current_scheduling_policy());
-    pthread_mutex_unlock(&job_q_mu);    
     return 0;
 }
 
 void remove_job()
 {
     struct node* old_head = dequeue();
-    //struct job* old_job = old_head->data;
     //TODO; calculations to do on job finish. call function from benchmark
     free(old_head);
 }
@@ -290,7 +272,9 @@ void list_jobs()
     }
 }
 
-//TODO fix me
+/**
+ * The selection sort function sorts the queue based on scheduling policy
+ */
 void selection_sort(struct node** node_arr)
 {
     for(int i = 0; i < num_jobs; i++)
@@ -316,14 +300,12 @@ void reorder_nodes()
     {
     struct node** node_arr = malloc(sizeof(struct node)*num_jobs);
     _cur = _head;
-    //populate node array
     for(int i = 0; i < num_jobs; i++)
     {
         node_arr[i] = _cur;
         _cur = _cur->next;
     }
     selection_sort(node_arr);
-
     _head = node_arr[0];
     _cur = _head;
     for(int i = 1; i < num_jobs; i++)
@@ -351,7 +333,9 @@ int change_scheduling_policy(int new_policy)
     }
     _scheduling_policy = new_policy;
     //call restructure function to reorder jobs.
+    pthread_mutex_lock(&job_q_mu);
     reorder_nodes();
+    pthread_mutex_unlock(&job_q_mu);
     printf("Scheduling policy has been switched to %s. All the %d waiting jobs have been rescheduled.\n", get_current_scheduling_policy(), num_jobs);
     return 0;
 }
