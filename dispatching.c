@@ -15,6 +15,9 @@ enum signal* get_scheduling_sig()
     return &scheduling_sig;
 }
 
+/**
+ * Function used for debugging dispatching functionality
+ */
 void prototype_dispatching()
 {
     //printf("[DISPATCHING THREAD] DEBUG: removing completed job in 5...\n");
@@ -29,16 +32,16 @@ void* dispatching_loop()
     while(get_program_state() == RUNNING || peek() != NULL)
     {
         //use pthread_cond to suspend the thread.
+        pthread_mutex_lock(&queue_state_t);
+        pthread_cond_wait(&queue_not_empty_cond_t, &queue_state_t);
         if(scheduling_sig == READY)
         {
-            //printf("[DISPATCHING TRHEAD] DEBUG: ready to excev\n");
-            //prototype_dispatching();
             int status;
-            char *my_args[5];
-            my_args[0] = "process";
-            my_args[1] = "-help";
-            my_args[2] = "-setup";
-            my_args[3] = NULL;
+            char *process_args[5];
+            process_args[0] = "process";
+            process_args[1] = "-help";
+            process_args[2] = "-setup";
+            process_args[3] = NULL;
             switch(pid = fork())
             {
                 case -1:
@@ -47,8 +50,7 @@ void* dispatching_loop()
                 case 0:
                     //pid is child process
                     //execv replaces the process returned by the fork, therefore no extra precuations need to be taken
-                    //get head process name
-                    execv("process", my_args);
+                    execv(peek()->data->name, process_args);
                     perror("dispatching loop: execv failed.");
                     exit(EXIT_FAILURE);
                 break;
@@ -56,11 +58,14 @@ void* dispatching_loop()
                     //wait for process to finish.
                     while(waitpid(pid, &status, WNOHANG) == 0);
                     //after execution dequeue the job and notify that a job has completed
+                    pthread_mutex_lock(&job_q_mu);
                     remove_job();
+                    pthread_mutex_unlock(&job_q_mu);
                 break;
             } 
            scheduling_sig = NOTREADY;
         }
+        pthread_mutex_unlock(&queue_state_t);
     }
     return NULL;
 }
