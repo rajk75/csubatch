@@ -15,6 +15,7 @@ Purpose: Main for csu batch
 #include "help2.h"
 #include "scheduling.h"
 #include "dispatching.h"
+#include "benchmark.h"
 
 enum program_state _state = RUNNING; //should only be read from other sources
 enum command_flag _command = DEFAULT;
@@ -136,10 +137,12 @@ int main()
                 change_scheduling_policy(PRIORITY);
             break;
             case TEST:
-                printf("Benchmark module in development");
-                //call function that forks the process
+                
+                start_test("examplebenchmakr", FCFS, 4);
+                
             break;
             case QUIT:
+                
                 _state = EXIT;
             break;
             default:
