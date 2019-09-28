@@ -112,7 +112,25 @@ void clock_job_completion()
 
 void start_test(char* benchmark_name, enum scheduling_policy policy, int num_of_jobs)
 {
-    //struct job 
+
+    int l_num_jc =  num_jc;
+
+    time_t l_sum_job_entry_completion = sum_job_entry_completion;
+
+    time_t l_sum_job_entry_inprogress = sum_job_entry_inprogress;
+
+    time_t l_sum_job_inprogres_completion = sum_job_inprogres_completion;
+
+    time_t l_lap_job_start = lap_job_start;
+
+    time_t l_lap_job_inprogress = lap_job_inprogress;
+
+    time_t l_lap_job_finish = lap_job_finish;
+
+    time_t l_program_start_time = program_start_time;
+
+    time_t l_program_end_time = program_end_time;
+    
     struct jobInfo array[5];
     (array[0].jobName) = job1;
     array[0].executionTime = 1;
@@ -135,7 +153,22 @@ void start_test(char* benchmark_name, enum scheduling_policy policy, int num_of_
         submit_job(job_name,array[i].executionTime,policy);
     }
 
-    output_stats();
+
+    l_num_jc = num_jc - l_num_jc;
+    l_sum_job_entry_completion = sum_job_entry_completion - l_sum_job_entry_completion;
+    l_sum_job_entry_inprogress = sum_job_entry_inprogress - l_sum_job_entry_inprogress;
+    l_sum_job_inprogres_completion = sum_job_inprogres_completion - l_sum_job_inprogres_completion;
+    l_lap_job_start = lap_job_start - l_lap_job_start;
+    l_lap_job_inprogress = lap_job_inprogress - l_lap_job_inprogress;
+    l_lap_job_finish = lap_job_finish - l_lap_job_finish;
+    l_program_start_time = program_start_time - l_program_start_time;
+    l_program_end_time = program_end_time - l_program_end_time;
+
+    printf("Total number of jobs submitted: %d\n",l_num_jc);
+    printf("Average turn around time:    %ld seconds\n",(l_sum_job_entry_completion/num_jc));
+    printf("Throughput:                  %ld seconds\n",(l_num_jc/(l_program_end_time-l_program_start_time)));
+
+    
     
 
 
@@ -159,8 +192,11 @@ char * output_stats(){
     sprintf(str,"Average turn around time:    %ld seconds\n",(sum_job_entry_completion/num_jc));
     sprintf(str,"Throughput:                  %ld seconds\n",(num_jc/(program_end_time-program_start_time)));
 
+
+
     return str;
 }
+
 
 
 
